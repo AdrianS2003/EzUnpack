@@ -1,42 +1,59 @@
 {
   "expo": {
     "name": "EzUnpack",
-    "slug": "EzUnpack",
+    "slug": "ez-unpack",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "ezunpack",
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/images/icon.png",
     "plugins": [
       "expo-router",
+      "expo-font",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#F0F4F8"
         }
-      ]
+      ],
+      "expo-status-bar",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "EzUnpack shows you the photos it has saved for you.",
+          "savePhotosPermission": "EzUnpack puts the photos from your archives into Photos.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
+      [
+        "expo-share-intent",
+        {
+          "androidIntentFilters": [
+            "*/*"
+          ],
+          "disableIOS": true
+        }
+      ],
+      "./plugins/with-archive-open-with",
+      "expo-sharing"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+    "android": {
+      "package": "com.ezunpack.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png",
+        "backgroundColor": "#F0F4F8"
+      }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4a077311-eede-437c-9d3c-0116949914f2"
+      }
     }
   }
 }
