@@ -1,0 +1,316 @@
+/**
+ * Every user-facing string. The tone rule for this app: no jargon, no file
+ * paths, no "extract" / "destination" / "MB" without a plain-word hint. If a
+ * sentence would confuse someone who has never opened a zip file, rewrite it.
+ */
+
+import type { ArchiveSource } from '@/data/archives';
+
+export type Lang = 'en' | 'ro';
+
+const MB = 1024 * 1024;
+
+/** "4 MB" / "700 KB" — never bytes, never decimals. */
+function humanSize(bytes: number): string {
+  if (bytes >= MB) return `${Math.round(bytes / MB)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+function sized(words: [string, string, string], bytes: number): string {
+  const word = bytes < 10 * MB ? words[0] : bytes < 100 * MB ? words[1] : words[2];
+  return `${word} - ${humanSize(bytes)}`;
+}
+
+export type Strings = {
+  search: string;
+  quick: string;
+  newArchives: string;
+  newArchivesSub: string;
+  savedFiles: string;
+  savedFilesSub: string;
+  feed: string;
+  feedNew: string;
+  feedSaved: string;
+  showAll: string;
+  unpack: string;
+  unpackAgain: string;
+  savedTag: string;
+  look: string;
+  lookSub: string;
+  minimal: string;
+  brutal: string;
+  found: (n: number) => string;
+  inside: (n: number) => string;
+  hint: string;
+  emptySearchTitle: string;
+  emptySearchSub: string;
+  emptyNewTitle: string;
+  emptyNewSub: string;
+  emptySavedTitle: string;
+  emptySavedSub: string;
+  navHome: string;
+  navGuide: string;
+  navSettings: string;
+  emptyFeedTitle: string;
+  emptyFeedSub: string;
+  sheetSub: string;
+  saveAll: string;
+  notNow: string;
+  /** The "archive as a folder" view. */
+  openFolder: string;
+  folderSub: (n: number) => string;
+  whereGallery: string;
+  whereApp: string;
+  sendFile: string;
+  folderKeepNote: string;
+  confirmTitle: string;
+  confirmBody: (n: number) => string;
+  confirmYes: string;
+  saving: string;
+  doneTitle: string;
+  openPhotos: string;
+  listening: string;
+  cancel: string;
+  guideTitle: string;
+  guideSub: string;
+  videoSoonTitle: string;
+  videoSoonBody: string;
+  settingsTitle: string;
+  langRow: string;
+  langRowSub: string;
+  /** First-run screen, shown before the phone's own permission dialog. */
+  primerTitle: string;
+  primerBody: string;
+  primerButton: string;
+  primerSkip: string;
+  ok: string;
+  source: Record<ArchiveSource, string>;
+  sizeLabel: (bytes: number) => string;
+  openFile: string;
+  openFileSub: string;
+  reading: string;
+  emptyArchive: string;
+  doneWhere: (toGallery: number, toDocuments: number) => string;
+  errorTitle: string;
+  errorPassword: string;
+  extracting: string;
+  errorNotArchive: string;
+  errorImport: string;
+  errorPermission: string;
+  errorUnreadable: string;
+  errorWrite: string;
+  toggles: [string, string][];
+  videos: [string, string, string][];
+};
+
+const en: Strings = {
+  search: 'Search files...',
+  quick: 'What would you like to do?',
+  newArchives: 'New Archives',
+  newArchivesSub: 'Not opened yet',
+  savedFiles: 'Saved Files',
+  savedFilesSub: 'Photos & documents',
+  feed: 'Recent Archives Found',
+  feedNew: 'Not Opened Yet',
+  feedSaved: 'Already Saved',
+  showAll: 'Show all archives',
+  unpack: 'UNPACK FILE',
+  unpackAgain: 'SAVE AGAIN',
+  savedTag: 'Saved',
+  look: 'Look',
+  lookSub: 'Two ways to see the app',
+  minimal: 'Minimalist',
+  brutal: 'Bold',
+  found: (n) => `${n} found`,
+  inside: (n) => `${n} files inside`,
+  hint: 'Send an archive to EzUnpack from WhatsApp or Email, or open it with the button above. We keep our own copy, so you can always find it again here.',
+  emptyFeedTitle: 'Nothing here yet',
+  emptyFeedSub:
+    'When somebody sends you an archive, choose Share or Open with, and pick EzUnpack. It will appear right here.',
+  emptySearchTitle: 'Nothing with that name',
+  emptySearchSub: 'Try part of the name, or clear the search box.',
+  emptyNewTitle: 'Nothing new right now',
+  emptyNewSub: 'You have opened everything we found. We will tell you when something arrives.',
+  emptySavedTitle: 'Nothing saved yet',
+  emptySavedSub: 'Open an archive and press the green button. What you save shows up here.',
+  navHome: 'Home',
+  navGuide: 'Video Guide',
+  navSettings: 'Simple Settings',
+  sheetSub: 'Files will be saved straight into your phone gallery!',
+  saveAll: 'Save to Photos & Docs',
+  notNow: 'Not now',
+  openFolder: 'See the files',
+  folderSub: (n) => `${n} files, saved and waiting for you`,
+  whereGallery: 'In Photos',
+  whereApp: 'Kept here in EzUnpack',
+  sendFile: 'Send',
+  folderKeepNote:
+    'Your photos and videos are also in Photos, so they stay on the phone even if EzUnpack is removed. The other files live here.',
+  confirmTitle: 'Save these files?',
+  confirmBody: (n) => `We will put ${n} files into your Photos and Documents.`,
+  confirmYes: 'Yes, save them',
+  saving: 'Saving your files...',
+  doneTitle: 'All files saved!',
+  openPhotos: 'Open Photos',
+  listening: 'Listening... say a file name',
+  cancel: 'Cancel',
+  guideTitle: 'Watch and learn',
+  guideSub: 'Short videos. Big pictures. No hurry.',
+  videoSoonTitle: 'Video coming soon',
+  videoSoonBody: 'This guide is still being filmed. It will appear here by itself.',
+  settingsTitle: 'Simple Settings',
+  langRow: 'Language',
+  langRowSub: 'Follows your phone at first',
+  primerTitle: 'One thing before we start',
+  primerBody:
+    'EzUnpack puts the photos and videos from your archives straight into Photos, where you already look at your pictures.\n\nIn a moment the phone will ask whether you allow this. Press Allow — nothing leaves your phone.',
+  primerButton: 'I understand, continue',
+  primerSkip: 'Later',
+  ok: 'OK',
+  source: {
+    picked: 'You chose this',
+    shared: 'Sent to EzUnpack',
+    opened: 'Kept here for you',
+  },
+  sizeLabel: (bytes) => sized(['Small file', 'Medium file', 'Big file'], bytes),
+  openFile: 'Open a file yourself',
+  openFileSub: 'Pick an archive from the phone',
+  reading: 'Looking inside...',
+  emptyArchive: 'There is nothing inside this archive.',
+  doneWhere: (gallery, documents) => {
+    if (gallery > 0 && documents > 0) {
+      return 'Your photos and videos are in Photos. The rest are waiting under "See the files".';
+    }
+    if (gallery > 0) return 'You can find them in Photos on your phone.';
+    return 'They are waiting for you under "See the files".';
+  },
+  errorTitle: 'That did not work',
+  errorPassword:
+    'This archive is locked with a password. EzUnpack cannot open it without one.',
+  extracting: 'Opening the archive...',
+  errorNotArchive:
+    'This is not an archive, so there is nothing to unpack. EzUnpack opens ZIP, RAR and 7z files.',
+  errorImport: 'EzUnpack could not take a copy of this file. Please try sending it again.',
+  errorPermission:
+    'EzUnpack was not allowed to put files in Photos. Give it permission and try again.',
+  errorUnreadable:
+    'This file could not be read. It may be damaged, or it may need a password.',
+  errorWrite: 'The files could not be saved. Check that the phone has free space left.',
+  toggles: [
+    ['Bigger text', 'Make all writing larger'],
+    ['Louder sounds', 'A sound plays when files are saved'],
+    ['Ask before saving', 'We check with you every time'],
+  ],
+  videos: [
+    ['How to open an archive', 'Step by step, one tap at a time', '1:20'],
+    ['Where did my photos go?', 'Find saved files in your gallery', '0:50'],
+    ['Is this file safe?', 'How to tell before you open it', '1:45'],
+  ],
+};
+
+const ro: Strings = {
+  search: 'Caută fișiere...',
+  quick: 'Ce dorești să faci?',
+  newArchives: 'Arhive Noi',
+  newArchivesSub: 'Încă nedeschise',
+  savedFiles: 'Fișiere Salvate',
+  savedFilesSub: 'Poze și documente',
+  feed: 'Arhive Găsite Recent',
+  feedNew: 'Încă Nedeschise',
+  feedSaved: 'Deja Salvate',
+  showAll: 'Arată toate arhivele',
+  unpack: 'DESPACHETEAZĂ',
+  unpackAgain: 'SALVEAZĂ DIN NOU',
+  savedTag: 'Salvat',
+  look: 'Aspect',
+  lookSub: 'Două feluri de a vedea aplicația',
+  minimal: 'Minimalist',
+  brutal: 'Îndrăzneț',
+  found: (n) => `${n} găsite`,
+  inside: (n) => `${n} fișiere înăuntru`,
+  hint: 'Trimite o arhivă către EzUnpack din WhatsApp sau Email, ori deschide-o cu butonul de sus. Păstrăm o copie a noastră, ca s-o găsești mereu aici.',
+  emptyFeedTitle: 'Încă nu e nimic aici',
+  emptyFeedSub:
+    'Când îți trimite cineva o arhivă, alege Distribuie sau Deschide cu, și apasă pe EzUnpack. Va apărea chiar aici.',
+  emptySearchTitle: 'Nimic cu numele acesta',
+  emptySearchSub: 'Încearcă o parte din nume sau șterge ce ai scris în căsuță.',
+  emptyNewTitle: 'Nimic nou acum',
+  emptyNewSub: 'Ai deschis tot ce am găsit. Te anunțăm noi când mai apare ceva.',
+  emptySavedTitle: 'Încă nu ai salvat nimic',
+  emptySavedSub: 'Deschide o arhivă și apasă butonul verde. Ce salvezi apare aici.',
+  navHome: 'Acasă',
+  navGuide: 'Ghid Video',
+  navSettings: 'Setări Simple',
+  sheetSub: 'Fișierele se salvează direct în galeria telefonului!',
+  saveAll: 'Salvează în Poze și Documente',
+  notNow: 'Mai târziu',
+  openFolder: 'Vezi fișierele',
+  folderSub: (n) => `${n} fișiere, salvate și te așteaptă`,
+  whereGallery: 'În Poze',
+  whereApp: 'Păstrat aici, în EzUnpack',
+  sendFile: 'Trimite',
+  folderKeepNote:
+    'Pozele și filmulețele sunt și în Poze, deci rămân pe telefon chiar dacă ștergi EzUnpack. Celelalte fișiere stau aici.',
+  confirmTitle: 'Salvăm aceste fișiere?',
+  confirmBody: (n) => `Punem ${n} fișiere în Poze și în Documente.`,
+  confirmYes: 'Da, salvează-le',
+  saving: 'Se salvează fișierele...',
+  doneTitle: 'Toate fișierele au fost salvate!',
+  openPhotos: 'Deschide Poze',
+  listening: 'Ascult... spune numele fișierului',
+  cancel: 'Renunță',
+  guideTitle: 'Uită-te și învață',
+  guideSub: 'Filmulețe scurte. Imagini mari. Fără grabă.',
+  videoSoonTitle: 'Filmulețul vine curând',
+  videoSoonBody: 'Acest ghid încă se filmează. Va apărea aici de la sine.',
+  settingsTitle: 'Setări Simple',
+  langRow: 'Limbă',
+  langRowSub: 'La început urmează telefonul',
+  primerTitle: 'Un lucru înainte să începem',
+  primerBody:
+    'EzUnpack pune pozele și filmulețele din arhive direct în Poze, acolo unde te uiți deja la imaginile tale.\n\nÎn câteva clipe telefonul o să te întrebe dacă ne dai voie. Apasă Permite — nimic nu pleacă de pe telefonul tău.',
+  primerButton: 'Am înțeles, continuă',
+  primerSkip: 'Mai târziu',
+  ok: 'OK',
+  source: {
+    picked: 'L-ai ales tu',
+    shared: 'Trimis către EzUnpack',
+    opened: 'Păstrat aici pentru tine',
+  },
+  sizeLabel: (bytes) => sized(['Fișier mic', 'Fișier mediu', 'Fișier mare'], bytes),
+  openFile: 'Deschide tu un fișier',
+  openFileSub: 'Alege o arhivă din telefon',
+  reading: 'Se uită înăuntru...',
+  emptyArchive: 'Nu este nimic în această arhivă.',
+  doneWhere: (gallery, documents) => {
+    if (gallery > 0 && documents > 0) {
+      return 'Pozele și filmulețele sunt în Poze. Restul te așteaptă la „Vezi fișierele".';
+    }
+    if (gallery > 0) return 'Le găsești în Poze, pe telefonul tău.';
+    return 'Te așteaptă la „Vezi fișierele".';
+  },
+  errorTitle: 'Nu a mers',
+  errorPassword:
+    'Această arhivă este încuiată cu o parolă. EzUnpack nu o poate deschide fără ea.',
+  extracting: 'Se deschide arhiva...',
+  errorNotArchive:
+    'Acesta nu este o arhivă, deci nu are ce să despacheteze. EzUnpack deschide fișiere ZIP, RAR și 7z.',
+  errorImport: 'EzUnpack nu a putut face o copie a acestui fișier. Încearcă să-l trimiți din nou.',
+  errorPermission:
+    'EzUnpack nu a primit voie să pună fișiere în Poze. Dă-i permisiunea și încearcă din nou.',
+  errorUnreadable:
+    'Fișierul nu a putut fi citit. Poate este stricat sau are nevoie de o parolă.',
+  errorWrite: 'Fișierele nu au putut fi salvate. Verifică dacă mai ai loc liber pe telefon.',
+  toggles: [
+    ['Text mai mare', 'Mărește toate scrisurile'],
+    ['Sunete mai tari', 'Se aude un sunet la salvare'],
+    ['Întreabă înainte de salvare', 'Te consultăm de fiecare dată'],
+  ],
+  videos: [
+    ['Cum deschizi o arhivă', 'Pas cu pas, o apăsare pe rând', '1:20'],
+    ['Unde au ajuns pozele mele?', 'Găsește fișierele în galerie', '0:50'],
+    ['Este sigur acest fișier?', 'Cum verifici înainte să-l deschizi', '1:45'],
+  ],
+};
+
+export const STRINGS: Record<Lang, Strings> = { en, ro };
