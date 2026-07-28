@@ -1,0 +1,375 @@
+import type { ReactNode } from 'react';
+import {
+  Pressable,
+  Text,
+  View,
+  type StyleProp,
+  type TextStyle,
+  type ViewStyle,
+} from 'react-native';
+
+import { Icon, type IconName } from '@/components/icon';
+import { useApp } from '@/state/app-state';
+import { font } from '@/theme/fonts';
+import { INK } from '@/theme/tokens';
+
+/* ------------------------------------------------------------------ text */
+
+/** Section titles, card titles, screen titles — one weight rule for all. */
+export function Heading({
+  size,
+  children,
+  style,
+  numberOfLines,
+}: {
+  size: number;
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+}) {
+  const { k, fs } = useApp();
+  return (
+    <Text
+      numberOfLines={numberOfLines}
+      style={[
+        {
+          fontFamily: font(k.heading === '900' ? 900 : 700),
+          fontSize: fs(size),
+          color: k.text,
+          letterSpacing: k.ls,
+          textTransform: k.upper,
+          lineHeight: fs(size) * 1.2,
+        },
+        style,
+      ]}>
+      {children}
+    </Text>
+  );
+}
+
+/** The quiet explanatory line that sits under almost every title. */
+export function Sub({
+  children,
+  size = 14.5,
+  style,
+}: {
+  children: ReactNode;
+  size?: number;
+  style?: StyleProp<TextStyle>;
+}) {
+  const { k, fs } = useApp();
+  return (
+    <Text
+      style={[
+        {
+          fontFamily: font(400),
+          fontSize: fs(size),
+          color: k.muted,
+          lineHeight: fs(size) * 1.35,
+        },
+        style,
+      ]}>
+      {children}
+    </Text>
+  );
+}
+
+export function Label({
+  children,
+  size = 15,
+  color,
+  weight = 600,
+  style,
+  numberOfLines,
+}: {
+  children: ReactNode;
+  size?: number;
+  color?: string;
+  weight?: 400 | 500 | 600 | 700 | 800 | 900;
+  style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+}) {
+  const { k, fs } = useApp();
+  return (
+    <Text
+      numberOfLines={numberOfLines}
+      style={[
+        { fontFamily: font(weight), fontSize: fs(size), color: color ?? k.muted },
+        style,
+      ]}>
+      {children}
+    </Text>
+  );
+}
+
+/* --------------------------------------------------------------- surfaces */
+
+export function Card({
+  children,
+  style,
+  padded = true,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  padded?: boolean;
+}) {
+  const { k } = useApp();
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: k.surface,
+          borderRadius: k.r,
+          borderWidth: k.bw,
+          borderColor: k.borderColor,
+          boxShadow: k.cardShadow,
+          padding: padded ? 18 : 0,
+        },
+        style,
+      ]}>
+      {children}
+    </View>
+  );
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+/**
+ * The one button people are meant to hit. Minimum 64px tall, an icon plus a
+ * short verb, and it visibly sinks when pressed so a tap never feels ignored.
+ */
+export function BigButton({
+  label,
+  icon,
+  onPress,
+  background,
+  ink,
+  shadow,
+  style,
+  minHeight = 70,
+}: {
+  label: string;
+  icon?: IconName;
+  onPress: () => void;
+  /** Defaults to the theme's action green. */
+  background?: string;
+  ink?: string;
+  /** Defaults to the theme's action shadow. */
+  shadow?: string;
+  style?: StyleProp<ViewStyle>;
+  minHeight?: number;
+}) {
+  const { k, fs } = useApp();
+  const bg = background ?? k.action;
+  const color = ink ?? k.actionInk;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [
+        {
+          width: '100%',
+          minHeight,
+          paddingHorizontal: 18,
+          paddingVertical: 12,
+          borderRadius: k.rSm,
+          borderWidth: k.bw,
+          borderColor: k.borderColor,
+          backgroundColor: bg,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 11,
+          boxShadow: pressed ? 'none' : (shadow ?? k.actionShadow),
+          // Always an array: letting `transform` become undefined between
+          // renders makes React Native process a null transform and throw.
+          transform: [{ translateY: pressed ? 2 : 0 }],
+        },
+        style,
+      ]}>
+      {icon ? <Icon name={icon} size={25} color={color} strokeWidth={2.4} /> : null}
+      <Text
+        style={{
+          fontFamily: font(k.heading === '900' ? 900 : 700),
+          fontSize: fs(19.5),
+          color,
+          letterSpacing: k.upper === 'uppercase' ? 0.4 : 0,
+          textTransform: k.upper,
+          textAlign: 'center',
+          lineHeight: fs(19.5) * 1.2,
+        }}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+export function GhostButton({ label, onPress }: { label: string; onPress: () => void }) {
+  const { k, fs } = useApp();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={{
+        width: '100%',
+        minHeight: 58,
+        marginTop: 12,
+        borderRadius: k.rSm,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text style={{ fontFamily: font(700), fontSize: fs(18), color: k.muted }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/* ------------------------------------------------------------- selectors */
+
+export type SegmentOption = { key: string; label: string };
+
+/** Language and theme pickers. Two options, always both visible, never a menu. */
+export function Segmented({
+  options,
+  value,
+  onChange,
+}: {
+  options: SegmentOption[];
+  value: string;
+  onChange: (key: string) => void;
+}) {
+  const { k, fs } = useApp();
+  const brutal = k.bw > 0;
+
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        padding: 5,
+        borderRadius: k.rPill + 5,
+        backgroundColor: brutal ? '#F5F1E8' : '#F1F5F9',
+        borderWidth: brutal ? 3 : 2,
+        borderColor: brutal ? INK : '#E2E8F0',
+      }}>
+      {options.map((option) => {
+        const on = option.key === value;
+        return (
+          <Pressable
+            key={option.key}
+            accessibilityRole="button"
+            accessibilityState={{ selected: on }}
+            onPress={() => onChange(option.key)}
+            style={{
+              minWidth: 60,
+              minHeight: 48,
+              paddingHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: k.rPill,
+              borderWidth: brutal ? 2 : 0,
+              borderColor: brutal ? INK : 'transparent',
+              backgroundColor: on ? (brutal ? k.accentSoft : k.accent) : 'transparent',
+            }}>
+            <Text
+              style={{
+                fontFamily: font(brutal ? 800 : 700),
+                fontSize: fs(15.5),
+                textTransform: k.upper,
+                color: on ? (brutal ? INK : '#fff') : k.muted,
+              }}>
+              {option.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/** Oversized switch — 76x46 with a 36px knob, easy to hit with a shaky hand. */
+export function Toggle({
+  value,
+  onChange,
+  label,
+}: {
+  value: boolean;
+  onChange: (next: boolean) => void;
+  label: string;
+}) {
+  const { k } = useApp();
+  const brutal = k.bw > 0;
+
+  return (
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: value }}
+      onPress={() => onChange(!value)}
+      style={{
+        width: 76,
+        height: 46,
+        padding: 4,
+        justifyContent: 'center',
+        alignItems: value ? 'flex-end' : 'flex-start',
+        borderRadius: brutal ? k.rSm : 999,
+        backgroundColor: value ? k.action : k.track,
+        borderWidth: k.bw,
+        borderColor: k.borderColor,
+      }}>
+      <View
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: brutal ? 2 : 999,
+          backgroundColor: '#fff',
+          borderWidth: brutal ? 2 : 0,
+          borderColor: INK,
+          boxShadow: brutal ? 'none' : '0 2px 5px 0 rgba(15,23,42,0.25)',
+        }}
+      />
+    </Pressable>
+  );
+}
+
+/** Coloured advice strip: the yellow "how this works" and mint "you are safe" notes. */
+export function Note({
+  icon,
+  children,
+  tone,
+  style,
+}: {
+  icon: IconName;
+  children: ReactNode;
+  tone: 'yellow' | 'mint';
+  style?: StyleProp<ViewStyle>;
+}) {
+  const { k } = useApp();
+  const bg = tone === 'yellow' ? k.yellow : k.mint;
+  const ink = tone === 'yellow' ? k.yellowInk : k.mintInk;
+
+  return (
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          gap: 12,
+          alignItems: 'flex-start',
+          padding: 16,
+          borderRadius: tone === 'yellow' ? k.r : k.rSm,
+          backgroundColor: bg,
+          borderWidth: k.bw > 0 ? k.bw : tone === 'mint' ? 2 : 0,
+          borderColor: k.bw > 0 ? INK : '#A7F3D0',
+          boxShadow: k.bw > 0 ? k.flatShadow : 'none',
+        },
+        style,
+      ]}>
+      <View style={{ marginTop: 2 }}>
+        <Icon name={icon} size={22} color={ink} strokeWidth={2.3} />
+      </View>
+      <View style={{ flex: 1 }}>{children}</View>
+    </View>
+  );
+}
