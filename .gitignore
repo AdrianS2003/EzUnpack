@@ -41,3 +41,10 @@ example
 # generated native folders
 /ios
 /android
+
+# Native build output inside local Expo modules. `.cxx` also holds the
+# libarchive source that CMake downloads at build time — thousands of files
+# that are fetched again on demand and must never be committed.
+modules/*/android/build/
+modules/*/android/.cxx/
+.gradle/

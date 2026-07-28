@@ -1,0 +1,32 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.archivenative'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.archivenative"
+  // Inherited rather than hardcoded: the app uses the version the expo-root-project
+  // plugin picks, and a module compiling C++ against a different NDK is asking
+  // for trouble. Leaving it unset makes AGP fall back to its own default, which
+  // on this machine points at a half-downloaded NDK.
+  ndkVersion rootProject.ext.ndkVersion
+
+  defaultConfig {
+    versionCode 1
+    versionName '0.1.0'
+    externalNativeBuild {
+      cmake {
+        cppFlags "-std=c++17", "-fexceptions"
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+  }
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+}
