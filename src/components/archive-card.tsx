@@ -38,7 +38,7 @@ export function ArchiveCard({
             justifyContent: 'center',
             backgroundColor: brutal ? k.tile.photo : k.accentSoft,
             borderWidth: brutal ? 3 : 2,
-            borderColor: brutal ? INK : '#DBEAFE',
+            borderColor: k.accentLine,
           }}>
           <Icon name="archive" size={30} color={brutal ? INK : k.accent} />
           <Text

@@ -44,9 +44,8 @@
       "package": "com.ezunpack.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png",
-        "backgroundColor": "#F0F4F8"
+        "backgroundColor": "#FFFFFF"
       }
     },
     "extra": {

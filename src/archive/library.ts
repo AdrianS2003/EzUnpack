@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
-import { archiveFormatOf, extensionOf } from '@/archive/kinds';
+import { archiveFormatFromType, archiveFormatOf, extensionOf } from '@/archive/kinds';
 import { folderFor } from '@/archive/unpack';
 import type { Archive, ArchiveSource } from '@/data/archives';
 
@@ -62,11 +62,14 @@ function toArchive(file: File, source: ArchiveSource, receivedAt: number): Archi
 /**
  * Finds an archive we already hold with the same contents as `candidate`.
  *
- * Names cannot be trusted for this. WhatsApp hands over its own internal file
- * name — a long string of digits and letters — so the same archive arriving by
- * share and by file picker looks like two unrelated files. Comparing bytes is
- * the only honest test. Size is checked first because it is free; md5 is only
- * computed for the rare file that matches on size.
+ * Names cannot be trusted for this. Even with the provider's display name
+ * recovered, the same archive can arrive twice under two spellings — forwarded
+ * on once and downloaded once, or saved a second time as "file (1).rar".
+ * Comparing bytes is the only honest test. Size is checked first because it is
+ * free; md5 is only computed for the rare file that matches on size.
+ *
+ * `candidate` is the staged copy in the cache, so nothing here can match it
+ * against itself.
  */
 function findTwin(candidate: File): File | null {
   const size = candidate.size;
@@ -75,7 +78,7 @@ function findTwin(candidate: File): File | null {
   const sameSize = archivesDirectory()
     .list()
     .filter((entry): entry is File => entry instanceof File)
-    .filter((file) => file.uri !== candidate.uri && file.size === size);
+    .filter((file) => file.size === size);
 
   if (sameSize.length === 0) return null;
 
@@ -85,33 +88,78 @@ function findTwin(candidate: File): File | null {
   return sameSize.find((file) => file.md5 === hash) ?? null;
 }
 
+/** Scratch folder for an incoming file whose real name we do not know yet. */
+function stagingDirectory(): Directory {
+  const dir = new Directory(Paths.cache, 'ezunpack-import');
+  try {
+    if (dir.exists) dir.delete();
+  } catch {
+    // A leftover scratch folder is not worth failing over — the copy below
+    // still lands, and the worst case is one stale file left in the cache.
+  }
+  dir.create({ intermediates: true, idempotent: true });
+  return dir;
+}
+
+/**
+ * The staged file's name, with an archive extension put back when it has none.
+ *
+ * A few providers report a display name with no extension at all. That name
+ * would work for the rest of the session, but `listArchives` recognises
+ * archives by extension, so after a restart the archive would quietly vanish
+ * from the feed. The provider's own MIME type is the second opinion that stops
+ * that happening.
+ */
+function named(name: string, mimeType: string): string {
+  if (archiveFormatOf(name)) return name;
+  const format = archiveFormatFromType(mimeType);
+  return format ? `${name}.${format}` : name;
+}
+
 /**
  * Copies an incoming archive into our folder and returns it.
  *
- * The copy happens before the duplicate check on purpose: incoming files often
- * arrive as `content://` URIs, where md5 is not always available, so we first
- * make it an ordinary file we can hash. If it turns out to be one we already
- * hold, the fresh copy is thrown away and the original is returned — the user
- * sees one entry, not the same archive twice under two different names.
+ * The copy lands in the cache first, for two reasons.
+ *
+ * It is the only way to learn what the file is called. `File.name` is
+ * `basename(uri)` and nothing more, so for a `content://` URI it returns the
+ * provider's internal identifier — which is precisely what WhatsApp hands over,
+ * a long run of digits and letters. The real name lives inside the provider
+ * under `DISPLAY_NAME`, and copying into a *folder* rather than onto a filename
+ * we picked is what makes expo-file-system go and ask for it.
+ *
+ * It also gives us something we can hash. Incoming files arrive as `content://`
+ * URIs where md5 is not always available, and the duplicate check needs real
+ * bytes. Hashing here means that when we already hold this archive, the folder
+ * the user sees is never touched at all.
  */
 export function importArchive(uri: string, source: ArchiveSource, fallbackName?: string): Archive {
-  const incoming = new File(uri);
-  const name = safeName(fallbackName ?? incoming.name);
+  const staging = stagingDirectory();
 
-  const target = freeFile(archivesDirectory(), name);
-  incoming.copySync(target);
+  try {
+    const incoming = new File(uri);
+    // Asked before the copy: afterwards we hold a plain cache file, and its
+    // type would be guessed from a name that may not have an extension.
+    const mimeType = incoming.type;
+    incoming.copySync(staging);
 
-  const twin = findTwin(target);
-  if (twin) {
+    const staged = staging.list().find((entry): entry is File => entry instanceof File);
+    if (!staged) throw new Error('the incoming file did not arrive');
+
+    const twin = findTwin(staged);
+    if (twin) return toArchive(twin, source, twin.lastModified ?? Date.now());
+
+    const target = freeFile(archivesDirectory(), safeName(fallbackName ?? named(staged.name, mimeType)));
+    staged.moveSync(target);
+
+    return toArchive(target, source, Date.now());
+  } finally {
     try {
-      target.delete();
+      if (staging.exists) staging.delete();
     } catch {
-      // Leaving the duplicate on disk is untidy but not worth failing over.
+      // Cache is the system's to reclaim.
     }
-    return toArchive(twin, source, twin.lastModified ?? Date.now());
   }
-
-  return toArchive(target, source, Date.now());
 }
 
 /**

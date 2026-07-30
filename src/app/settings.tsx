@@ -1,8 +1,10 @@
-import type { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState, type ReactNode } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
 
+import { measureStorage, sweepLeftovers, type Storage } from '@/archive/storage';
 import { AppHeader } from '@/components/app-header';
-import { Heading, Segmented, Sub, Toggle } from '@/components/ui';
+import { BigButton, Card, Heading, Segmented, Sub, Toggle } from '@/components/ui';
 import type { Lang } from '@/i18n/strings';
 import { useApp, type Settings } from '@/state/app-state';
 import type { ThemeName } from '@/theme/tokens';
@@ -68,8 +70,81 @@ export default function SettingsScreen() {
             );
           })}
         </View>
+
+        <StorageCard />
       </ScrollView>
     </View>
+  );
+}
+
+/** Nothing to report is friendlier than an error about a folder that is not there. */
+function read(): Storage | null {
+  try {
+    return measureStorage();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * How much room the app takes, and the one thing the user can do about it here.
+ *
+ * Deleting an archive already takes its files with it, so this is not a second
+ * way to delete things — it only offers back what nothing points at any more.
+ * The number is measured rather than remembered, because a count kept in
+ * preferences would quietly drift away from the truth on disk.
+ */
+function StorageCard() {
+  const { t } = useApp();
+  const [storage, setStorage] = useState<Storage | null>(read);
+
+  const measure = useCallback(() => setStorage(read()), []);
+
+  // The tabs stay mounted, so without this the number would still show what was
+  // true the first time this screen was opened — including archives deleted on
+  // the home screen since.
+  useFocusEffect(measure);
+
+  const clean = useCallback(() => {
+    if (!storage || storage.leftover.length === 0) return;
+    Alert.alert(t.storageTitle, t.storageLeftover(storage.leftoverBytes), [
+      { text: t.cancel, style: 'cancel' },
+      {
+        text: t.storageCleanYes,
+        style: 'destructive',
+        onPress: () => {
+          const freed = sweepLeftovers(storage.leftover);
+          measure();
+          Alert.alert(t.storageTitle, t.storageDone(freed), [{ text: t.ok }]);
+        },
+      },
+    ]);
+  }, [measure, storage, t]);
+
+  if (!storage) return null;
+
+  const hasLeftovers = storage.leftover.length > 0;
+
+  return (
+    <Card style={{ marginTop: 22 }}>
+      <Heading size={18}>{t.storageTitle}</Heading>
+      <Sub size={15} style={{ marginTop: 6 }}>
+        {t.storageBody(storage.bytes)}
+      </Sub>
+      <Sub size={15} style={{ marginTop: 10 }}>
+        {hasLeftovers ? t.storageLeftover(storage.leftoverBytes) : t.storageTidy}
+      </Sub>
+
+      {hasLeftovers ? (
+        <BigButton
+          label={t.storageClean(storage.leftoverBytes)}
+          icon="trash"
+          onPress={clean}
+          minHeight={64}
+          style={{ marginTop: 16 }}
+        />
+      ) : null}
+    </Card>
   );
 }
 

@@ -43,6 +43,24 @@ export function archiveFormatOf(name: string): ArchiveFormat | null {
 }
 
 /**
+ * The format a content provider is claiming, for files that arrive without a
+ * usable name.
+ *
+ * Matched on a substring rather than a fixed list because there is no agreed
+ * spelling — the same `.rar` is `application/rar` on one phone and
+ * `application/x-rar-compressed` on the next. See `archive-mime-types.json`.
+ * `7z` is tested first: it is the only one whose spellings never contain
+ * another format's name, so checking it early costs nothing and rules it out.
+ */
+export function archiveFormatFromType(mimeType: string): ArchiveFormat | null {
+  const type = mimeType.toLowerCase();
+  if (type.includes('7z')) return '7z';
+  if (type.includes('rar')) return 'rar';
+  if (type.includes('zip')) return 'zip';
+  return null;
+}
+
+/**
  * Zip entries carry the full path inside the archive. People recognise
  * "Beach_01.jpg", not "DCIM/2026/Beach_01.jpg".
  */

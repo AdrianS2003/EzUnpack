@@ -25,6 +25,10 @@ export type Tokens = {
   muted: string;
   accent: string;
   accentSoft: string;
+  /** Drop shadow under a button filled with `accent`, a shade darker than it. */
+  accentShadow: string;
+  /** Hairline for surfaces tinted with `accentSoft`. */
+  accentLine: string;
   action: string;
   actionInk: string;
   /** Drop shadow under the primary action buttons. */
@@ -64,8 +68,11 @@ export const THEMES: Record<ThemeName, Tokens> = {
     surface: '#FFFFFF',
     text: '#1E293B',
     muted: '#64748B',
-    accent: '#2563EB',
-    accentSoft: '#EAF1FE',
+    // The logo blue, and a tint and a shade derived from it at the same hue.
+    accent: '#386C96',
+    accentSoft: '#E8F0F7',
+    accentShadow: '0 4px 0 0 #274B68',
+    accentLine: '#D6E4F0',
     action: '#059669',
     actionInk: '#FFFFFF',
     actionShadow: '0 4px 0 0 #047857',
@@ -80,14 +87,15 @@ export const THEMES: Record<ThemeName, Tokens> = {
     chip: '#F1F5F9',
     chipInk: '#334155',
     track: '#E2E8F0',
-    tile: { photo: '#E5EDFB', video: '#EFE6FE', document: '#FDE8E8', other: '#EEF2F7' },
+    tile: { photo: '#E4EDF5', video: '#EFE6FE', document: '#FDE8E8', other: '#EEF2F7' },
     heading: '700',
     upper: 'none',
     ls: -0.3,
     mint: '#ECFDF5',
     mintInk: '#065F46',
-    yellow: '#EFF6FF',
-    yellowInk: '#1E3A8A',
+    // The advice strips are blue in this theme, so they follow the logo too.
+    yellow: '#EDF3F9',
+    yellowInk: '#2B5273',
     danger: '#DC2626',
     dangerSoft: '#FEF2F2',
     divider: '#F1F5F9',
@@ -99,6 +107,9 @@ export const THEMES: Record<ThemeName, Tokens> = {
     muted: '#4B5563',
     accent: INK,
     accentSoft: '#FDE047',
+    // This theme has no blue at all: contrast comes from ink, not hue.
+    accentShadow: `4px 4px 0 0 ${INK}`,
+    accentLine: INK,
     action: '#34D399',
     actionInk: INK,
     actionShadow: `4px 4px 0 0 ${INK}`,

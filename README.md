@@ -34,6 +34,15 @@ The whole path is real — a file goes in, photos come out in the gallery:
 - **Deleting an archive** throws away our copy and everything unpacked from it.
   Photos and videos are deliberately left in the gallery: they were handed to
   the phone's own Photos app, which is where the user was told to look for them.
+  Settings reports what the app occupies and hands back folders whose archive
+  has gone.
+- **Voice search** through the phone's own speech dialog, in Romanian or
+  English. Borrowing Android's recogniser instead of shipping one keeps
+  `RECORD_AUDIO` out of the manifest entirely — see [`src/speech.ts`](src/speech.ts).
+- **Its own icon and colour.** The launcher icon is the layered E, fitted to the
+  66dp circle every launcher shows; the monochrome layer is the front E alone,
+  because flattening the stack fills in the notches that make it an E. The whole
+  minimal theme is built from the logo blue `#386C96`.
 - A **first-run screen** explaining the gallery permission in plain words before
   Android's own dialog appears.
 - Both themes, both languages, bigger text, confirm-before-saving — all
@@ -41,18 +50,17 @@ The whole path is real — a file goes in, photos come out in the gallery:
 
 Still simulated:
 
-- **Voice search** — the microphone dialog fakes a result after 2.2s.
 - **Video guides** — the tab and thumbnails exist; there are no videos yet.
 - **Save sound** — vibrates instead; needs `expo-audio` and an audio asset.
 
 Known gaps, roughly in the order they will hurt:
 
-1. **The app icon is still Expo's.**
-2. **Password-protected archives** cannot be opened. libarchive does not do RAR
+1. **Password-protected archives** cannot be opened. libarchive does not do RAR
    encryption; that would mean swapping in the official UnRAR sources.
-3. **No way to reclaim orphaned space.** Deleting works per archive; folders
-   left behind by archives that vanished some other way are never swept up.
-4. **Debug APKs package one architecture.** Fine on the build machine's phone,
+2. **Search only matches names, never contents.** The name is now the real one,
+   but somebody looking for a photo of a grandchild is searching for the photo,
+   not for whatever the sender called the zip.
+3. **Debug APKs package one architecture.** Fine on the build machine's phone,
    useless to hand to someone else — see *Shipping* below.
 
 ## Run it
@@ -98,6 +106,7 @@ src/
   i18n/                   every user-facing string, EN + RO
   state/                  preferences, persisted
   theme/                  the two design token sets + font weights
+  speech.ts               voice search, borrowed from the phone's own dialog
 archive-mime-types.json   shared by the picker and the intent filter
 ```
 
@@ -114,6 +123,7 @@ hardcode a colour or radius; they read `k.*` from `useApp()`.
 | `contents.ts` | the manifest of an unpacked archive, and opening its files |
 | `kinds.ts` | what counts as a photo, a video, a document |
 | `incoming.ts` | holds a file the OS handed us before React was ready |
+| `storage.ts` | what the app occupies, and which of it nothing points at |
 
 ## Shipping
 
@@ -146,7 +156,9 @@ this point is guesswork until someone who has never seen the app tries to open a
 photo their grandchild sent them.
 
 **Later.** The video guides, which the audience will use more than any written
-help. A sound on save. An email address for feedback.
+help. A sound on save. An email address for feedback. A Play Store listing,
+which brings its own list: a privacy policy, a target API level, a signed
+release build, and store artwork.
 
 **The open question: automatic discovery.** The original idea was that the app
 finds archives by itself and the user never browses folders. That promise is

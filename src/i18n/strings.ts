@@ -83,6 +83,14 @@ export type Strings = {
   settingsTitle: string;
   langRow: string;
   langRowSub: string;
+  /** How much room the app takes, and the leftovers it can give back. */
+  storageTitle: string;
+  storageBody: (bytes: number) => string;
+  storageTidy: string;
+  storageLeftover: (bytes: number) => string;
+  storageClean: (bytes: number) => string;
+  storageCleanYes: string;
+  storageDone: (bytes: number) => string;
   /** First-run screen, shown before the phone's own permission dialog. */
   primerTitle: string;
   primerBody: string;
@@ -105,6 +113,7 @@ export type Strings = {
   errorUnreadable: string;
   errorWrite: string;
   errorDelete: string;
+  errorNoVoice: string;
   toggles: [string, string][];
   videos: [string, string, string][];
 };
@@ -172,6 +181,14 @@ const en: Strings = {
   settingsTitle: 'Simple Settings',
   langRow: 'Language',
   langRowSub: 'Follows your phone at first',
+  storageTitle: 'Room on the phone',
+  storageBody: (bytes) => `EzUnpack is keeping ${humanSize(bytes)} on your phone.`,
+  storageTidy: 'All of it belongs to an archive you can see. There is nothing to tidy up.',
+  storageLeftover: (bytes) =>
+    `${humanSize(bytes)} of it is left over from archives that are gone. Nothing can open those files any more.`,
+  storageClean: (bytes) => `Free up ${humanSize(bytes)}`,
+  storageCleanYes: 'Yes, free it up',
+  storageDone: (bytes) => `${humanSize(bytes)} is free again.`,
   primerTitle: 'One thing before we start',
   primerBody:
     'EzUnpack puts the photos and videos from your archives straight into Photos, where you already look at your pictures.\n\nIn a moment the phone will ask whether you allow this. Press Allow — nothing leaves your phone.',
@@ -208,6 +225,7 @@ const en: Strings = {
     'This file could not be read. It may be damaged, or it may need a password.',
   errorWrite: 'The files could not be saved. Check that the phone has free space left.',
   errorDelete: 'This archive could not be removed. Please try again.',
+  errorNoVoice: 'This phone cannot listen. You can still type the name in the box above.',
   toggles: [
     ['Bigger text', 'Make all writing larger'],
     ['Louder sounds', 'A sound plays when files are saved'],
@@ -283,6 +301,14 @@ const ro: Strings = {
   settingsTitle: 'Setări Simple',
   langRow: 'Limbă',
   langRowSub: 'La început urmează telefonul',
+  storageTitle: 'Locul de pe telefon',
+  storageBody: (bytes) => `EzUnpack ține ${humanSize(bytes)} pe telefonul tău.`,
+  storageTidy: 'Tot ce e aici ține de o arhivă pe care o vezi. Nu e nimic de făcut curat.',
+  storageLeftover: (bytes) =>
+    `${humanSize(bytes)} au rămas de la arhive care nu mai există. Fișierele acelea nu se mai pot deschide de nicăieri.`,
+  storageClean: (bytes) => `Eliberează ${humanSize(bytes)}`,
+  storageCleanYes: 'Da, eliberează',
+  storageDone: (bytes) => `${humanSize(bytes)} sunt liberi din nou.`,
   primerTitle: 'Un lucru înainte să începem',
   primerBody:
     'EzUnpack pune pozele și filmulețele din arhive direct în Poze, acolo unde te uiți deja la imaginile tale.\n\nÎn câteva clipe telefonul o să te întrebe dacă ne dai voie. Apasă Permite — nimic nu pleacă de pe telefonul tău.',
@@ -319,6 +345,7 @@ const ro: Strings = {
     'Fișierul nu a putut fi citit. Poate este stricat sau are nevoie de o parolă.',
   errorWrite: 'Fișierele nu au putut fi salvate. Verifică dacă mai ai loc liber pe telefon.',
   errorDelete: 'Arhiva nu a putut fi ștearsă. Mai încearcă o dată.',
+  errorNoVoice: 'Telefonul acesta nu poate asculta. Poți scrie numele în căsuța de sus.',
   toggles: [
     ['Text mai mare', 'Mărește toate scrisurile'],
     ['Sunete mai tari', 'Se aude un sunet la salvare'],

@@ -371,7 +371,7 @@ function Sheet({
                     onPress={() => void openInGallery(result.firstAssetId!)}
                     background={brutal ? k.accentSoft : k.accent}
                     ink={brutal ? INK : '#fff'}
-                    shadow={brutal ? k.actionShadow : '0 4px 0 0 #1D4ED8'}
+                    shadow={k.accentShadow}
                     style={{ marginTop: 6 }}
                   />
                 ) : null}

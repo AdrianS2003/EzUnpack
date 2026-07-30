@@ -12,10 +12,10 @@ import { FolderSheet } from '@/components/folder-sheet';
 import { AppHeader } from '@/components/app-header';
 import { ArchiveCard } from '@/components/archive-card';
 import { Icon, type IconName } from '@/components/icon';
-import { MicOverlay } from '@/components/mic-overlay';
 import { BigButton, Heading, Label, Note, Sub } from '@/components/ui';
 import { UnpackSheet } from '@/components/unpack-sheet';
 import type { Archive, ArchiveSource } from '@/data/archives';
+import { listen } from '@/speech';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
 import { INK } from '@/theme/tokens';
@@ -29,11 +29,10 @@ function asFileUri(path: string): string {
 }
 
 export default function HomeScreen() {
-  const { k, t, fs, savedIds, markSaved, forgetSaved } = useApp();
+  const { k, t, fs, lang, savedIds, markSaved, forgetSaved } = useApp();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [openId, setOpenId] = useState<string | null>(null);
-  const [micOpen, setMicOpen] = useState(false);
   /** Everything in our archive folder, newest first. Read once on mount. */
   const [archives, setArchives] = useState<Archive[]>(() => listArchives());
 
@@ -162,17 +161,31 @@ export default function HomeScreen() {
     [],
   );
 
-  // Stable so the sheet and the microphone dialog never remount mid-interaction.
+  // Stable so the sheets never remount mid-interaction.
   const closeSheet = useCallback(() => setOpenId(null), []);
   const closeFolder = useCallback(() => setFolder(null), []);
-  const openMic = useCallback(() => setMicOpen(true), []);
-  const closeMic = useCallback(() => setMicOpen(false), []);
+
+  /**
+   * Hands the microphone to the phone's own speech dialog and puts whatever it
+   * heard into the search box. Nothing is said when the user simply backs out
+   * of the dialog — they know they cancelled — but a phone that cannot listen
+   * at all has to say so, or the button looks broken.
+   */
+  const search = useCallback(async () => {
+    const heard = await listen(lang, t.listening);
+    if (heard.status === 'heard') {
+      setFilter('all');
+      setQuery(heard.text);
+    } else if (heard.status === 'unavailable') {
+      Alert.alert(t.errorTitle, t.errorNoVoice, [{ text: t.ok }]);
+    }
+  }, [lang, t]);
 
   const feedTitle = filter === 'new' ? t.feedNew : filter === 'saved' ? t.feedSaved : t.feed;
 
   return (
     <View style={{ flex: 1, backgroundColor: k.bg }}>
-      <AppHeader showSearch query={query} onQuery={setQuery} onMic={openMic} />
+      <AppHeader showSearch query={query} onQuery={setQuery} onMic={() => void search()} />
 
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 22, paddingBottom: 32 }}
@@ -186,7 +199,7 @@ export default function HomeScreen() {
           onPress={() => void openPicker()}
           background={k.bw > 0 ? k.accentSoft : k.accent}
           ink={k.bw > 0 ? INK : '#fff'}
-          shadow={k.bw > 0 ? k.actionShadow : '0 4px 0 0 #1D4ED8'}
+          shadow={k.accentShadow}
           style={{ marginTop: 14 }}
         />
         <Sub size={15} style={{ marginTop: 8, textAlign: 'center' }}>
@@ -291,7 +304,6 @@ export default function HomeScreen() {
 
       <UnpackSheet archive={open} onClose={closeSheet} onSaved={markSaved} />
       <FolderSheet contents={folder} onClose={closeFolder} />
-      <MicOverlay visible={micOpen} onClose={closeMic} onResult={setQuery} />
     </View>
   );
 }
