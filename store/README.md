@@ -1,0 +1,79 @@
+# Getting EzUnpack onto Play
+
+What is ready, what is left, and which of it only you can do.
+
+Files in this folder are for the console, not for the app — nothing here is
+bundled or shipped.
+
+| File | What it is for |
+| --- | --- |
+| `privacy-policy.md` | Host it somewhere public, then paste the URL into the console. Has two `TODO` placeholders for your email. |
+| `listing.md` | Title, short and full descriptions in English and Romanian, plus what to photograph for the screenshots. |
+| `data-safety.md` | Every answer for the Data Safety form and the content rating questionnaire, with the reasoning. |
+| `play-icon-512.png` | The 512 × 512 store icon, flattened onto white. Play rejects an alpha channel, so this one has none — verified, not assumed. |
+
+## Already done, in the app
+
+- **Release bundle format.** `eas.json`'s `production` profile builds an
+  `app-bundle` with `autoIncrement`, which is what Play wants. Nothing to change.
+- **All four architectures.** `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64` are in
+  `gradle.properties`, so a release bundle covers every device. The
+  one-architecture problem only ever affected debug APKs.
+- **16 KB page alignment.** The native archive library is linked with
+  `-Wl,-z,max-page-size=16384`, so it loads on Android 15 devices with 16 KB
+  memory pages. Google requires this of new submissions and it is easy to miss —
+  it is handled.
+- **Target API 36.** Expo SDK 57's default, which satisfies the current
+  requirement. Worth confirming against the console at upload; it is a one-line
+  check, not a task.
+- **No `RECORD_AUDIO`, no `MANAGE_EXTERNAL_STORAGE`, no ad ID.** The three
+  permissions Google scrutinises hardest, none of them needed. Voice search
+  borrows the phone's own speech dialog, and files arrive and leave through
+  system pickers.
+- **No `READ_MEDIA_AUDIO`.** Removed; the app never touches an audio file.
+- **The share sheet is honest.** EzUnpack now offers itself only for archives and
+  for unidentified files, not for every photo and link on the phone.
+
+## Left to do, in this order
+
+**1. Fill in the two `TODO`s in `privacy-policy.md` and host it.**
+A GitHub Pages site on this repo is enough — the file is already Markdown. The
+URL is a required field, so nothing else can proceed without it.
+
+**2. Take the screenshots.** `listing.md` says which four and what to avoid.
+This is the only part that needs a phone and cannot be written in advance. Put a
+real archive through the app first so nothing on screen is empty.
+
+**3. Draw the feature graphic.** 1,024 × 500, no transparency. `listing.md` has
+the layout notes.
+
+**4. Build and upload to internal testing.**
+
+```bash
+npx eas-cli build --profile production --platform android
+```
+
+Upload to the **internal testing** track first, install from Play on a phone
+that has never had a debug build on it, and open a real WhatsApp archive. This
+catches what a debug build cannot: release signing, code shrinking, and the
+absence of the dev client.
+
+**5. Fill in the console forms** from `data-safety.md`, then submit for review.
+
+## Worth doing before a wide audience, not blocking
+
+- **An address people can write to.** There is no way to report a problem from
+  inside the app. This audience will not file a bug report, but the person who
+  set up their phone might.
+- **Crash reporting.** Right now, if the app falls over on somebody else's phone,
+  you never find out. It is the only window you have into a user base that will
+  not tell you anything.
+- **A pass with TalkBack on.** There are accessibility labels throughout, but
+  nobody has yet run the app with the screen reader actually enabled — and this
+  audience overlaps heavily with the people who use it.
+
+## The thing that outranks all of the above
+
+Fifteen minutes watching one person who has never seen the app try to open a
+photo their grandchild sent them. Everything past the current feature set is
+guesswork until that happens, and it may well reorder this whole list.
