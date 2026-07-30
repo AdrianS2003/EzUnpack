@@ -1,6 +1,7 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
 import { archiveFormatOf, extensionOf } from '@/archive/kinds';
+import { folderFor } from '@/archive/unpack';
 import type { Archive, ArchiveSource } from '@/data/archives';
 
 /**
@@ -130,8 +131,33 @@ export function listArchives(): Archive[] {
   return archives.sort((a, b) => b.receivedAt - a.receivedAt);
 }
 
-/** Removes our copy. The original in WhatsApp or Downloads is untouched. */
-export function forgetArchive(archive: Archive): void {
-  const file = new File(archive.uri);
-  if (file.exists) file.delete();
+/**
+ * Removes everything the app holds for one archive: the unpacked files and our
+ * own copy of the archive itself. The original in WhatsApp or Downloads is
+ * untouched, and so is the gallery — the photos and videos were handed to the
+ * phone's own Photos app, which is where the user has been told to look for
+ * them and where they must stay even when EzUnpack is gone.
+ *
+ * The two deletions are attempted independently: if one fails, the other should
+ * still free its space. A half-removed archive is better than a stuck one, and
+ * the card disappears from the feed either way.
+ */
+export function deleteArchive(archive: Archive): void {
+  let failure: unknown = null;
+
+  try {
+    const folder = folderFor(archive);
+    if (folder.exists) folder.delete();
+  } catch (error) {
+    failure = error;
+  }
+
+  try {
+    const file = new File(archive.uri);
+    if (file.exists) file.delete();
+  } catch (error) {
+    failure ??= error;
+  }
+
+  if (failure) throw failure;
 }

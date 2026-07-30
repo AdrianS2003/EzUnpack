@@ -5,7 +5,7 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { readContents, type Contents } from '@/archive/contents';
 import { subscribeIncoming, takeIncomingUri } from '@/archive/incoming';
 import { archiveFormatOf } from '@/archive/kinds';
-import { importArchive, listArchives } from '@/archive/library';
+import { deleteArchive, importArchive, listArchives } from '@/archive/library';
 import { pickArchive } from '@/archive/pick';
 import { folderFor } from '@/archive/unpack';
 import { FolderSheet } from '@/components/folder-sheet';
@@ -29,7 +29,7 @@ function asFileUri(path: string): string {
 }
 
 export default function HomeScreen() {
-  const { k, t, fs, savedIds, markSaved } = useApp();
+  const { k, t, fs, savedIds, markSaved, forgetSaved } = useApp();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [openId, setOpenId] = useState<string | null>(null);
@@ -79,6 +79,38 @@ export default function HomeScreen() {
       }
     },
     [t],
+  );
+
+  /**
+   * Throws away our copy of an archive and everything unpacked from it. Asked
+   * about first, because this is the only thing in the app that destroys
+   * anything, and the confirmation is where the user is told the one fact they
+   * actually care about: their photos are not going anywhere.
+   */
+  const removeArchive = useCallback(
+    (archive: Archive) => {
+      Alert.alert(t.deleteTitle, t.deleteBody(archive.name), [
+        { text: t.cancel, style: 'cancel' },
+        {
+          text: t.deleteYes,
+          style: 'destructive',
+          onPress: () => {
+            try {
+              deleteArchive(archive);
+            } catch {
+              Alert.alert(t.errorTitle, t.errorDelete, [{ text: t.ok }]);
+              return;
+            }
+            setArchives((current) => current.filter((a) => a.id !== archive.id));
+            forgetSaved(archive.id);
+            // Deleting is only reachable from the feed, but a sheet left open on
+            // a gone archive would read from a file that no longer exists.
+            setOpenId((current) => (current === archive.id ? null : current));
+          },
+        },
+      ]);
+    },
+    [forgetSaved, t],
   );
 
   const openPicker = useCallback(async () => {
@@ -202,6 +234,7 @@ export default function HomeScreen() {
               archive={archive}
               onOpen={() => setOpenId(archive.id)}
               onOpenFolder={() => showFolder(archive)}
+              onDelete={() => removeArchive(archive)}
             />
           ))}
         </View>
@@ -339,7 +372,7 @@ function QuickAction({
             borderRadius: k.rPill,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: brutal ? '#F43F5E' : '#DC2626',
+            backgroundColor: k.danger,
             borderWidth: k.bw,
             borderColor: k.borderColor,
           }}>

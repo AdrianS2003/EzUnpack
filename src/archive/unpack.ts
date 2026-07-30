@@ -70,10 +70,27 @@ function safeName(name: string): string {
   return name.replace(/[\\/:*?"<>|]/g, '_').replace(/^\.+/, '') || 'file';
 }
 
-/** Folder that holds one archive's unpacked contents. */
+/**
+ * Folder that holds one archive's unpacked contents.
+ *
+ * The extension is part of the folder name because it is part of the identity:
+ * `holiday.zip` and `holiday.rar` are two different archives, and sharing a
+ * folder between them means deleting one takes the other's files with it.
+ */
 export function folderFor(archive: Archive): Directory {
-  const stem = safeName(archive.name.replace(/\.[^.]+$/, ''));
-  return new Directory(Paths.document, LIBRARY_FOLDER, FILES_FOLDER, stem);
+  const root = new Directory(Paths.document, LIBRARY_FOLDER, FILES_FOLDER);
+  const name = safeName(archive.name);
+  const dot = name.lastIndexOf('.');
+  const stem = dot > 0 ? name.slice(0, dot) : name;
+  const ext = dot > 0 ? name.slice(dot + 1) : '';
+
+  const folder = new Directory(root, ext ? `${stem}-${ext}` : stem);
+  if (folder.exists) return folder;
+
+  // Archives unpacked before the folder carried the extension used the bare
+  // name; without this, "See the files" would lose their manifest.
+  const legacy = new Directory(root, stem);
+  return legacy.exists ? legacy : folder;
 }
 
 function freeFile(folder: Directory, name: string): File {

@@ -206,21 +206,45 @@ export function BigButton({
   );
 }
 
-export function GhostButton({ label, onPress }: { label: string; onPress: () => void }) {
+/**
+ * The quiet way out of a card: same full width as the green button so it is
+ * just as easy to hit, but flat and unfilled so it never competes with it.
+ * `danger` is for the one destructive action there is — deleting an archive.
+ */
+export function GhostButton({
+  label,
+  onPress,
+  icon,
+  tone = 'muted',
+}: {
+  label: string;
+  onPress: () => void;
+  icon?: IconName;
+  tone?: 'muted' | 'danger';
+}) {
   const { k, fs } = useApp();
+  const color = tone === 'danger' ? k.danger : k.muted;
+
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
-      style={{
+      style={({ pressed }) => ({
         width: '100%',
         minHeight: 58,
         marginTop: 12,
-        borderRadius: k.rSm,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-      }}>
-      <Text style={{ fontFamily: font(700), fontSize: fs(18), color: k.muted }}>{label}</Text>
+        gap: 10,
+        borderRadius: k.rSm,
+        // A pressed ghost button has no shadow to sink into, so the tint is the
+        // only thing that tells the user the tap landed.
+        backgroundColor: pressed ? (tone === 'danger' ? k.dangerSoft : k.track) : 'transparent',
+      })}>
+      {icon ? <Icon name={icon} size={22} color={color} strokeWidth={2.3} /> : null}
+      <Text style={{ fontFamily: font(700), fontSize: fs(18), color }}>{label}</Text>
     </Pressable>
   );
 }

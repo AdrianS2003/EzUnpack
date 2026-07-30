@@ -15,10 +15,12 @@ export function ArchiveCard({
   archive,
   onOpen,
   onOpenFolder,
+  onDelete,
 }: {
   archive: Archive;
   onOpen: () => void;
   onOpenFolder: () => void;
+  onDelete: () => void;
 }) {
   const { k, t, savedIds } = useApp();
   const brutal = k.bw > 0;
@@ -92,6 +94,10 @@ export function ArchiveCard({
       )}
 
       {saved ? <GhostButton label={t.unpackAgain} onPress={onOpen} /> : null}
+
+      {/* Stacked rather than side by side: full-width targets are hard to miss
+          and, more to the point, hard to hit by accident. */}
+      <GhostButton label={t.deleteArchive} icon="trash" tone="danger" onPress={onDelete} />
     </Card>
   );
 }

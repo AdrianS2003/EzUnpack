@@ -19,7 +19,8 @@ export type IconName =
   | 'check'
   | 'close'
   | 'play'
-  | 'send';
+  | 'send'
+  | 'trash';
 
 type Props = {
   name: IconName;
@@ -121,6 +122,13 @@ export function Icon({ name, size = 24, color, strokeWidth = 2.2 }: Props) {
         <>
           <Path d="M12 20V5m0 0-6 6m6-6 6 6" {...stroke} />
           <Path d="M4 3h16" {...stroke} />
+        </>
+      )}
+      {name === 'trash' && (
+        <>
+          <Path d="M4 7h16M10 4h4" {...stroke} />
+          <Path d="M6 7h12l-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z" {...stroke} />
+          <Path d="M10.5 11v7M13.5 11v7" {...stroke} />
         </>
       )}
     </Svg>

@@ -31,6 +31,9 @@ The whole path is real — a file goes in, photos come out in the gallery:
   can be opened or sent onwards from there.
 - **Duplicate detection by content**, because WhatsApp renames files to internal
   identifiers and the same archive would otherwise appear twice.
+- **Deleting an archive** throws away our copy and everything unpacked from it.
+  Photos and videos are deliberately left in the gallery: they were handed to
+  the phone's own Photos app, which is where the user was told to look for them.
 - A **first-run screen** explaining the gallery permission in plain words before
   Android's own dialog appears.
 - Both themes, both languages, bigger text, confirm-before-saving — all
@@ -44,11 +47,11 @@ Still simulated:
 
 Known gaps, roughly in the order they will hurt:
 
-1. **Nothing can be deleted.** The app keeps a copy of every archive plus the
-   extracted documents, with no way to remove either. Storage grows forever.
-2. **The app icon is still Expo's.**
-3. **Password-protected archives** cannot be opened. libarchive does not do RAR
+1. **The app icon is still Expo's.**
+2. **Password-protected archives** cannot be opened. libarchive does not do RAR
    encryption; that would mean swapping in the official UnRAR sources.
+3. **No way to reclaim orphaned space.** Deleting works per archive; folders
+   left behind by archives that vanished some other way are never swept up.
 4. **Debug APKs package one architecture.** Fine on the build machine's phone,
    useless to hand to someone else — see *Shipping* below.
 
@@ -138,10 +141,9 @@ unzip -l app.apk | grep "lib/"
 
 ## Where this goes next
 
-**Soon.** Deleting archives and extracted files, so storage stops growing. A
-real app icon. Testing with an actual target user — everything past this point
-is guesswork until someone who has never seen the app tries to open a photo
-their grandchild sent them.
+**Soon.** A real app icon. Testing with an actual target user — everything past
+this point is guesswork until someone who has never seen the app tries to open a
+photo their grandchild sent them.
 
 **Later.** The video guides, which the audience will use more than any written
 help. A sound on save. An email address for feedback.

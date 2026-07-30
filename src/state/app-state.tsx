@@ -53,6 +53,8 @@ type AppState = Prefs & {
   setSetting: (key: keyof Settings, value: boolean) => void;
   finishOnboarding: () => void;
   markSaved: (id: string) => void;
+  /** Drops a deleted archive's id, so the list does not grow with dead entries. */
+  forgetSaved: (id: string) => void;
   /** False until stored preferences have been read back. */
   ready: boolean;
 };
@@ -119,6 +121,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       finishOnboarding: () => setPrefs((p) => ({ ...p, onboarded: true })),
       markSaved: (id) =>
         setPrefs((p) => (p.savedIds.includes(id) ? p : { ...p, savedIds: [...p.savedIds, id] })),
+      forgetSaved: (id) =>
+        setPrefs((p) =>
+          p.savedIds.includes(id) ? { ...p, savedIds: p.savedIds.filter((s) => s !== id) } : p,
+        ),
       ready,
     };
   }, [prefs, ready]);

@@ -51,6 +51,9 @@ export type Tokens = {
   mintInk: string;
   yellow: string;
   yellowInk: string;
+  /** Reserved for the one destructive action in the app: deleting an archive. */
+  danger: string;
+  dangerSoft: string;
   /** Hairline used inside cards to separate rows. */
   divider: string;
 };
@@ -85,6 +88,8 @@ export const THEMES: Record<ThemeName, Tokens> = {
     mintInk: '#065F46',
     yellow: '#EFF6FF',
     yellowInk: '#1E3A8A',
+    danger: '#DC2626',
+    dangerSoft: '#FEF2F2',
     divider: '#F1F5F9',
   },
   brutal: {
@@ -116,6 +121,8 @@ export const THEMES: Record<ThemeName, Tokens> = {
     mintInk: INK,
     yellow: '#FDE047',
     yellowInk: INK,
+    danger: '#E11D48',
+    dangerSoft: '#FECDD3',
     divider: INK,
   },
 };

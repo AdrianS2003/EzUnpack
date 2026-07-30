@@ -66,6 +66,11 @@ export type Strings = {
   confirmTitle: string;
   confirmBody: (n: number) => string;
   confirmYes: string;
+  /** Removing an archive and everything the app kept for it. */
+  deleteArchive: string;
+  deleteTitle: string;
+  deleteBody: (name: string) => string;
+  deleteYes: string;
   saving: string;
   doneTitle: string;
   openPhotos: string;
@@ -99,6 +104,7 @@ export type Strings = {
   errorPermission: string;
   errorUnreadable: string;
   errorWrite: string;
+  errorDelete: string;
   toggles: [string, string][];
   videos: [string, string, string][];
 };
@@ -149,6 +155,11 @@ const en: Strings = {
   confirmTitle: 'Save these files?',
   confirmBody: (n) => `We will put ${n} files into your Photos and Documents.`,
   confirmYes: 'Yes, save them',
+  deleteArchive: 'Delete this archive',
+  deleteTitle: 'Delete this archive?',
+  deleteBody: (name) =>
+    `We will remove "${name}" and the files EzUnpack kept for it. Your photos and videos stay in Photos.`,
+  deleteYes: 'Yes, delete it',
   saving: 'Saving your files...',
   doneTitle: 'All files saved!',
   openPhotos: 'Open Photos',
@@ -196,6 +207,7 @@ const en: Strings = {
   errorUnreadable:
     'This file could not be read. It may be damaged, or it may need a password.',
   errorWrite: 'The files could not be saved. Check that the phone has free space left.',
+  errorDelete: 'This archive could not be removed. Please try again.',
   toggles: [
     ['Bigger text', 'Make all writing larger'],
     ['Louder sounds', 'A sound plays when files are saved'],
@@ -254,6 +266,11 @@ const ro: Strings = {
   confirmTitle: 'Salvăm aceste fișiere?',
   confirmBody: (n) => `Punem ${n} fișiere în Poze și în Documente.`,
   confirmYes: 'Da, salvează-le',
+  deleteArchive: 'Șterge arhiva',
+  deleteTitle: 'Ștergem această arhivă?',
+  deleteBody: (name) =>
+    `Ștergem „${name}" și fișierele pe care EzUnpack le-a păstrat pentru ea. Pozele și filmulețele rămân în Poze.`,
+  deleteYes: 'Da, șterge-o',
   saving: 'Se salvează fișierele...',
   doneTitle: 'Toate fișierele au fost salvate!',
   openPhotos: 'Deschide Poze',
@@ -301,6 +318,7 @@ const ro: Strings = {
   errorUnreadable:
     'Fișierul nu a putut fi citit. Poate este stricat sau are nevoie de o parolă.',
   errorWrite: 'Fișierele nu au putut fi salvate. Verifică dacă mai ai loc liber pe telefon.',
+  errorDelete: 'Arhiva nu a putut fi ștearsă. Mai încearcă o dată.',
   toggles: [
     ['Text mai mare', 'Mărește toate scrisurile'],
     ['Sunete mai tari', 'Se aude un sunet la salvare'],
