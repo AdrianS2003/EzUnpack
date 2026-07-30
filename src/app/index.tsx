@@ -68,7 +68,7 @@ export default function HomeScreen() {
         return;
       }
       try {
-        const archive = importArchive(uri, source, name);
+        const archive = importArchive(uri, source, name, t.unnamedArchive(new Date()));
         setArchives((current) => [archive, ...current.filter((a) => a.id !== archive.id)]);
         setFilter('all');
         setQuery('');

@@ -1,9 +1,15 @@
 import { useCallback, useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { openItem, shareItem, type ContentItem, type Contents } from '@/archive/contents';
-import { Icon } from '@/components/icon';
+import {
+  openItem,
+  saveItemToPhone,
+  shareItem,
+  type ContentItem,
+  type Contents,
+} from '@/archive/contents';
+import { Icon, type IconName } from '@/components/icon';
 import { Heading, Label, Note, Sub } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
@@ -41,6 +47,24 @@ export function FolderSheet({
       setBusy(null);
     }
   }, []);
+
+  const save = useCallback(
+    async (item: ContentItem) => {
+      setBusy(item.ref);
+      try {
+        // Nothing is said when they back out of the folder picker: they know
+        // they cancelled, and a dialog confirming it would only be in the way.
+        if ((await saveItemToPhone(item)) === 'saved') {
+          Alert.alert(t.saveToPhoneDone, undefined, [{ text: t.ok }]);
+        }
+      } catch {
+        Alert.alert(t.errorTitle, t.errorSaveToPhone, [{ text: t.ok }]);
+      } finally {
+        setBusy(null);
+      }
+    },
+    [t],
+  );
 
   if (!contents) return null;
 
@@ -95,9 +119,7 @@ export function FolderSheet({
             <View
               key={item.ref}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 14,
+                gap: 12,
                 padding: 14,
                 borderRadius: k.r,
                 backgroundColor: k.surface,
@@ -110,7 +132,7 @@ export function FolderSheet({
                 accessibilityRole="button"
                 accessibilityLabel={item.name}
                 onPress={() => void open(item)}
-                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
                 <View
                   style={{
                     width: 62,
@@ -143,25 +165,23 @@ export function FolderSheet({
                 </View>
               </Pressable>
 
-              {/* Photos are shared from the gallery, which already has the
-                  button and the permissions for it. */}
+              {/* Photos get neither button: they are already in Photos, which has
+                  its own sharing and its own permissions to do it with. */}
               {item.kind === 'file' ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`${t.sendFile} ${item.name}`}
-                  onPress={() => void shareItem(item)}
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: k.rSm,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: brutal ? k.accentSoft : '#F1F5F9',
-                    borderWidth: brutal ? 2 : 0,
-                    borderColor: INK,
-                  }}>
-                  <Icon name="send" size={22} color={k.text} strokeWidth={2.3} />
-                </Pressable>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <RowAction
+                    icon="send"
+                    label={t.sendFile}
+                    hint={item.name}
+                    onPress={() => void shareItem(item)}
+                  />
+                  <RowAction
+                    icon="download"
+                    label={t.saveToPhone}
+                    hint={item.name}
+                    onPress={() => void save(item)}
+                  />
+                </View>
               ) : null}
             </View>
           ))}
@@ -177,9 +197,80 @@ export function FolderSheet({
               {t.folderKeepNote}
             </Text>
           </Note>
+
+          {/* Kept separate from the note above rather than merged into it: one is
+              about what survives uninstalling, this one about where an edit goes.
+              Two short notes are read; one long one is skipped. */}
+          <Note icon="help" tone="mint">
+            <Text
+              style={{
+                fontFamily: font(400),
+                fontSize: fs(15),
+                lineHeight: fs(15) * 1.45,
+                color: k.mintInk,
+              }}>
+              {t.folderEditNote}
+            </Text>
+          </Note>
         </ScrollView>
       </View>
     </Modal>
+  );
+}
+
+/**
+ * One of the two things you can do with a kept file.
+ *
+ * Written out rather than left as a bare icon: an upward arrow and a downward
+ * arrow side by side are a puzzle, and this is the screen where the user is
+ * already unsure where anything is going.
+ */
+function RowAction({
+  icon,
+  label,
+  hint,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  /** The file name, read out after the verb rather than shown. */
+  hint: string;
+  onPress: () => void;
+}) {
+  const { k, fs } = useApp();
+  const brutal = k.bw > 0;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${label} ${hint}`}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        flex: 1,
+        minHeight: 54,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        paddingHorizontal: 10,
+        borderRadius: k.rSm,
+        backgroundColor: brutal ? k.accentSoft : '#F1F5F9',
+        borderWidth: brutal ? 2 : 0,
+        borderColor: INK,
+        transform: [{ translateY: pressed ? 2 : 0 }],
+      })}>
+      <Icon name={icon} size={21} color={k.text} strokeWidth={2.3} />
+      <Text
+        style={{
+          fontFamily: font(700),
+          fontSize: fs(15.5),
+          color: k.text,
+          flexShrink: 1,
+        }}
+        numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 

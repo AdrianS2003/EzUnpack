@@ -28,7 +28,9 @@ The whole path is real — a file goes in, photos come out in the gallery:
 - **Photos and videos** land in their own **EzUnpack album** in the gallery, not
   loose in the camera roll.
 - **Everything else** stays in the app, viewable through the folder screen, and
-  can be opened or sent onwards from there.
+  can be opened, sent onwards, or copied out to a folder on the phone the user
+  picks — Android grants that one folder persistently, so no storage permission
+  is involved.
 - **Duplicate detection by content**, because WhatsApp renames files to internal
   identifiers and the same archive would otherwise appear twice.
 - **Deleting an archive** throws away our copy and everything unpacked from it.
@@ -48,9 +50,10 @@ The whole path is real — a file goes in, photos come out in the gallery:
 - Both themes, both languages, bigger text, confirm-before-saving — all
   persisted across restarts.
 
-Still simulated:
+Still missing rather than simulated:
 
-- **Video guides** — the tab and thumbnails exist; there are no videos yet.
+- **Video guides** — the screen exists and says plainly that the videos are being
+  filmed, with a "Soon" badge on each. Nothing pretends to be playable.
 - **Save sound** — vibrates instead; needs `expo-audio` and an audio asset.
 
 Known gaps, roughly in the order they will hurt:
@@ -120,7 +123,7 @@ hardcode a colour or radius; they read `k.*` from `useApp()`.
 | `native.ts` | the only import of the local native module |
 | `unpack.ts` | extract, then route each file to gallery or app folder |
 | `library.ts` | our own copy of every archive handed to us |
-| `contents.ts` | the manifest of an unpacked archive, and opening its files |
+| `contents.ts` | the manifest of an unpacked archive; opening, sending and saving out its files |
 | `kinds.ts` | what counts as a photo, a video, a document |
 | `incoming.ts` | holds a file the OS handed us before React was ready |
 | `storage.ts` | what the app occupies, and which of it nothing points at |

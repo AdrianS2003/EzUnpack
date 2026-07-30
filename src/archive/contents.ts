@@ -113,3 +113,37 @@ export async function shareItem(item: ContentItem): Promise<void> {
   if (!(await Sharing.isAvailableAsync())) return;
   await Sharing.shareAsync(item.ref);
 }
+
+/** Whether the user went through with picking somewhere to save. */
+export type SaveOutcome = 'saved' | 'cancelled';
+
+/**
+ * Copies a kept document into a folder the user picks.
+ *
+ * This answers a question the app previously could not. A document opened from
+ * here in Word or a PDF reader is handed over as a temporary link; whatever that
+ * app then saves, it saves wherever it likes, under whatever name, and we never
+ * see it again. Rather than send someone hunting through the phone for it,
+ * EzUnpack puts a copy somewhere they chose themselves and can go back to.
+ *
+ * Android's own picker grants us that one folder persistently, so this needs no
+ * storage permission — which is the difference between this and the "show me the
+ * whole phone" version of the same idea.
+ */
+export async function saveItemToPhone(item: ContentItem): Promise<SaveOutcome> {
+  if (item.kind !== 'file') return 'cancelled';
+
+  let folder: Directory;
+  try {
+    folder = await Directory.pickDirectoryAsync();
+  } catch {
+    // The picker throws on cancel exactly as it does on failure, and here both
+    // mean the same thing: no folder was chosen, so nothing has gone wrong.
+    return 'cancelled';
+  }
+
+  // Deliberately not caught. Unlike cancelling, a copy that fails is worth
+  // telling the user about, and the caller has the words for it.
+  new File(item.ref).copySync(folder);
+  return 'saved';
+}

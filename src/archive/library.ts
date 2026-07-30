@@ -1,6 +1,11 @@
-import { Directory, File, Paths } from 'expo-file-system';
+import { Directory, File, FileMode, Paths } from 'expo-file-system';
 
-import { archiveFormatFromType, archiveFormatOf, extensionOf } from '@/archive/kinds';
+import {
+  archiveFormatFromBytes,
+  archiveFormatFromType,
+  archiveFormatOf,
+  extensionOf,
+} from '@/archive/kinds';
 import { folderFor } from '@/archive/unpack';
 import type { Archive, ArchiveSource } from '@/data/archives';
 
@@ -101,19 +106,48 @@ function stagingDirectory(): Directory {
   return dir;
 }
 
+/** Reads just enough of a file to identify it. Archives can be huge. */
+function headOf(file: File): Uint8Array | null {
+  let handle;
+  try {
+    handle = file.open(FileMode.ReadOnly);
+    return handle.readBytes(8);
+  } catch {
+    return null;
+  } finally {
+    try {
+      handle?.close();
+    } catch {
+      // Nothing was written; a handle that will not close is the system's problem.
+    }
+  }
+}
+
 /**
- * The staged file's name, with an archive extension put back when it has none.
+ * Decides what to call an archive, in descending order of how much the source
+ * can be trusted.
  *
- * A few providers report a display name with no extension at all. That name
- * would work for the rest of the session, but `listArchives` recognises
- * archives by extension, so after a restart the archive would quietly vanish
- * from the feed. The provider's own MIME type is the second opinion that stops
- * that happening.
+ * The file's own signature comes first, because it is the only thing here that
+ * cannot be wrong. The MIME type is a fallback for the rare file whose bytes we
+ * could not read at all. And a display name is only kept when it carries an
+ * extension: providers that have a real filename give us one, while providers
+ * handing over an internal identifier give a bare string of digits, which is not
+ * a name and should not be shown to anyone as if it were.
  */
-function named(name: string, mimeType: string): string {
-  if (archiveFormatOf(name)) return name;
-  const format = archiveFormatFromType(mimeType);
-  return format ? `${name}.${format}` : name;
+function nameFor(staged: File, mimeType: string, unnamed: string): string {
+  const head = headOf(staged);
+  const format = (head && archiveFormatFromBytes(head)) ?? archiveFormatFromType(mimeType);
+
+  const given = staged.name;
+  if (archiveFormatOf(given)) return given;
+
+  const dot = given.lastIndexOf('.');
+  const stem = dot > 0 ? given.slice(0, dot) : '';
+
+  // No extension means no filename was ever passed to us, only a key into
+  // somebody else's database. A plain sentence beats showing the key.
+  const base = stem || unnamed;
+  return format ? `${base}.${format}` : base;
 }
 
 /**
@@ -133,7 +167,13 @@ function named(name: string, mimeType: string): string {
  * bytes. Hashing here means that when we already hold this archive, the folder
  * the user sees is never touched at all.
  */
-export function importArchive(uri: string, source: ArchiveSource, fallbackName?: string): Archive {
+export function importArchive(
+  uri: string,
+  source: ArchiveSource,
+  fallbackName: string | undefined,
+  /** Shown as the name when the sender gave us an identifier instead of one. */
+  unnamed: string,
+): Archive {
   const staging = stagingDirectory();
 
   try {
@@ -149,7 +189,8 @@ export function importArchive(uri: string, source: ArchiveSource, fallbackName?:
     const twin = findTwin(staged);
     if (twin) return toArchive(twin, source, twin.lastModified ?? Date.now());
 
-    const target = freeFile(archivesDirectory(), safeName(fallbackName ?? named(staged.name, mimeType)));
+    const chosen = fallbackName ?? nameFor(staged, mimeType, unnamed);
+    const target = freeFile(archivesDirectory(), safeName(chosen));
     staged.moveSync(target);
 
     return toArchive(target, source, Date.now());
@@ -165,6 +206,12 @@ export function importArchive(uri: string, source: ArchiveSource, fallbackName?:
 /**
  * Everything we have been given, newest first. Called on launch to build the
  * feed — the source is unknown for older files, so they read as "opened".
+ *
+ * Nothing is filtered by extension. This folder holds only what `importArchive`
+ * put there, so anything in it is already an archive somebody handed us, and
+ * judging it again by its name only means a file whose sender gave it a poor one
+ * is present while the app runs and gone after a restart. Losing sight of a
+ * file the user watched us accept is far worse than listing an odd one.
  */
 export function listArchives(): Archive[] {
   const entries = archivesDirectory().list();
@@ -172,7 +219,6 @@ export function listArchives(): Archive[] {
 
   for (const entry of entries) {
     if (!(entry instanceof File)) continue;
-    if (!archiveFormatOf(entry.name)) continue;
     archives.push(toArchive(entry, 'opened', entry.lastModified ?? 0));
   }
 

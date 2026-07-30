@@ -21,6 +21,16 @@ function sized(words: [string, string, string], bytes: number): string {
   return `${word} - ${humanSize(bytes)}`;
 }
 
+/**
+ * "30.07.2026". Written out by hand rather than through `Intl`: month names in
+ * Romanian depend on locale data the phone may not carry, and this string ends
+ * up inside a filename, where being wrong is permanent.
+ */
+function shortDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
 export type Strings = {
   search: string;
   quick: string;
@@ -62,7 +72,11 @@ export type Strings = {
   whereGallery: string;
   whereApp: string;
   sendFile: string;
+  saveToPhone: string;
+  saveToPhoneDone: string;
   folderKeepNote: string;
+  /** Why an edit made in another app does not come back here. */
+  folderEditNote: string;
   confirmTitle: string;
   confirmBody: (n: number) => string;
   confirmYes: string;
@@ -78,8 +92,12 @@ export type Strings = {
   cancel: string;
   guideTitle: string;
   guideSub: string;
+  guideNotice: string;
   videoSoonTitle: string;
   videoSoonBody: string;
+  videoSoonBadge: string;
+  /** Stands in for a name when the sender handed over an identifier instead. */
+  unnamedArchive: (received: Date) => string;
   settingsTitle: string;
   langRow: string;
   langRowSub: string;
@@ -114,8 +132,13 @@ export type Strings = {
   errorWrite: string;
   errorDelete: string;
   errorNoVoice: string;
+  errorSaveToPhone: string;
   toggles: [string, string][];
-  videos: [string, string, string][];
+  /**
+   * Title and one line each. No running times: quoting a length for a video that
+   * does not exist is the kind of small lie that costs trust when it is found.
+   */
+  videos: [string, string][];
 };
 
 const en: Strings = {
@@ -159,8 +182,12 @@ const en: Strings = {
   whereGallery: 'In Photos',
   whereApp: 'Kept here in EzUnpack',
   sendFile: 'Send',
+  saveToPhone: 'Save to phone',
+  saveToPhoneDone: 'Saved in the folder you chose.',
   folderKeepNote:
     'Your photos and videos are also in Photos, so they stay on the phone even if EzUnpack is removed. The other files live here.',
+  folderEditNote:
+    'If you open a file here in another app — Word, for example — and save it there, that app keeps your changes and decides where they go. What stays here is always the original from the archive. To put a copy somewhere you can find again, use "Save to phone".',
   confirmTitle: 'Save these files?',
   confirmBody: (n) => `We will put ${n} files into your Photos and Documents.`,
   confirmYes: 'Yes, save them',
@@ -176,8 +203,13 @@ const en: Strings = {
   cancel: 'Cancel',
   guideTitle: 'Watch and learn',
   guideSub: 'Short videos. Big pictures. No hurry.',
-  videoSoonTitle: 'Video coming soon',
-  videoSoonBody: 'This guide is still being filmed. It will appear here by itself.',
+  guideNotice:
+    'The videos are still being filmed, so none of them play yet. When they are ready they will appear here on their own — there is nothing for you to install or switch on. Below is what is being made.',
+  videoSoonTitle: 'Not filmed yet',
+  videoSoonBody:
+    'This one is still being made. It will appear here by itself when it is ready — you do not have to come back and check.',
+  videoSoonBadge: 'Soon',
+  unnamedArchive: (received) => `Archive received ${shortDate(received)}`,
   settingsTitle: 'Simple Settings',
   langRow: 'Language',
   langRowSub: 'Follows your phone at first',
@@ -226,15 +258,17 @@ const en: Strings = {
   errorWrite: 'The files could not be saved. Check that the phone has free space left.',
   errorDelete: 'This archive could not be removed. Please try again.',
   errorNoVoice: 'This phone cannot listen. You can still type the name in the box above.',
+  errorSaveToPhone:
+    'The file could not be put there. There may already be one with the same name — try another folder.',
   toggles: [
     ['Bigger text', 'Make all writing larger'],
     ['Louder sounds', 'A sound plays when files are saved'],
     ['Ask before saving', 'We check with you every time'],
   ],
   videos: [
-    ['How to open an archive', 'Step by step, one tap at a time', '1:20'],
-    ['Where did my photos go?', 'Find saved files in your gallery', '0:50'],
-    ['Is this file safe?', 'How to tell before you open it', '1:45'],
+    ['How to open an archive', 'Step by step, one tap at a time'],
+    ['Where did my photos go?', 'Find saved files in your gallery'],
+    ['Is this file safe?', 'How to tell before you open it'],
   ],
 };
 
@@ -279,8 +313,12 @@ const ro: Strings = {
   whereGallery: 'În Poze',
   whereApp: 'Păstrat aici, în EzUnpack',
   sendFile: 'Trimite',
+  saveToPhone: 'Salvează pe telefon',
+  saveToPhoneDone: 'Salvat în folderul pe care l-ai ales.',
   folderKeepNote:
     'Pozele și filmulețele sunt și în Poze, deci rămân pe telefon chiar dacă ștergi EzUnpack. Celelalte fișiere stau aici.',
+  folderEditNote:
+    'Dacă deschizi un fișier de aici în altă aplicație — Word, de exemplu — și îl salvezi acolo, modificările rămân la acea aplicație, iar ea hotărăște unde le pune. Aici rămâne mereu originalul din arhivă. Ca să pui o copie într-un loc pe care îl regăsești, folosește „Salvează pe telefon".',
   confirmTitle: 'Salvăm aceste fișiere?',
   confirmBody: (n) => `Punem ${n} fișiere în Poze și în Documente.`,
   confirmYes: 'Da, salvează-le',
@@ -296,8 +334,13 @@ const ro: Strings = {
   cancel: 'Renunță',
   guideTitle: 'Uită-te și învață',
   guideSub: 'Filmulețe scurte. Imagini mari. Fără grabă.',
-  videoSoonTitle: 'Filmulețul vine curând',
-  videoSoonBody: 'Acest ghid încă se filmează. Va apărea aici de la sine.',
+  guideNotice:
+    'Filmulețele încă se filmează, deci niciunul nu pornește încă. Când vor fi gata, apar aici de la sine — nu ai nimic de instalat sau de pornit. Mai jos vezi ce se pregătește.',
+  videoSoonTitle: 'Încă nu e filmat',
+  videoSoonBody:
+    'Acesta încă se pregătește. Va apărea aici de la sine când e gata — nu trebuie să revii să verifici.',
+  videoSoonBadge: 'Curând',
+  unnamedArchive: (received) => `Arhivă primită ${shortDate(received)}`,
   settingsTitle: 'Setări Simple',
   langRow: 'Limbă',
   langRowSub: 'La început urmează telefonul',
@@ -346,15 +389,17 @@ const ro: Strings = {
   errorWrite: 'Fișierele nu au putut fi salvate. Verifică dacă mai ai loc liber pe telefon.',
   errorDelete: 'Arhiva nu a putut fi ștearsă. Mai încearcă o dată.',
   errorNoVoice: 'Telefonul acesta nu poate asculta. Poți scrie numele în căsuța de sus.',
+  errorSaveToPhone:
+    'Fișierul nu a putut fi pus acolo. Poate există deja unul cu același nume — încearcă alt folder.',
   toggles: [
     ['Text mai mare', 'Mărește toate scrisurile'],
     ['Sunete mai tari', 'Se aude un sunet la salvare'],
     ['Întreabă înainte de salvare', 'Te consultăm de fiecare dată'],
   ],
   videos: [
-    ['Cum deschizi o arhivă', 'Pas cu pas, o apăsare pe rând', '1:20'],
-    ['Unde au ajuns pozele mele?', 'Găsește fișierele în galerie', '0:50'],
-    ['Este sigur acest fișier?', 'Cum verifici înainte să-l deschizi', '1:45'],
+    ['Cum deschizi o arhivă', 'Pas cu pas, o apăsare pe rând'],
+    ['Unde au ajuns pozele mele?', 'Găsește fișierele în galerie'],
+    ['Este sigur acest fișier?', 'Cum verifici înainte să-l deschizi'],
   ],
 };
 

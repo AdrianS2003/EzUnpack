@@ -2,7 +2,7 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { AppHeader } from '@/components/app-header';
 import { Icon } from '@/components/icon';
-import { Heading, Sub } from '@/components/ui';
+import { Heading, Note, Sub } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
 import { INK } from '@/theme/tokens';
@@ -23,16 +23,31 @@ export default function GuideScreen() {
         <Heading size={24} style={{ marginBottom: 6 }}>
           {t.guideTitle}
         </Heading>
-        <Sub size={16.5} style={{ marginBottom: 20 }}>
+        <Sub size={16.5} style={{ marginBottom: 18 }}>
           {t.guideSub}
         </Sub>
 
+        {/* Said once, up front and in full. The cards below look like videos, so
+            without this the first tap is the moment the user learns otherwise —
+            and for this audience a tap that does nothing reads as their mistake. */}
+        <Note icon="info" tone="yellow" style={{ marginBottom: 22 }}>
+          <Text
+            style={{
+              fontFamily: font(400),
+              fontSize: fs(15.5),
+              lineHeight: fs(15.5) * 1.45,
+              color: k.yellowInk,
+            }}>
+            {t.guideNotice}
+          </Text>
+        </Note>
+
         <View style={{ gap: 18 }}>
-          {t.videos.map(([title, sub, length]) => (
+          {t.videos.map(([title, sub]) => (
             <Pressable
               key={title}
               accessibilityRole="button"
-              accessibilityLabel={`${title}. ${sub}. ${length}`}
+              accessibilityLabel={`${title}. ${sub}. ${t.videoSoonBadge}`}
               onPress={() => Alert.alert(t.videoSoonTitle, t.videoSoonBody, [{ text: t.ok }])}
               style={({ pressed }) => ({
                 overflow: 'hidden',
@@ -52,6 +67,8 @@ export default function GuideScreen() {
                   borderBottomWidth: k.bw,
                   borderBottomColor: k.borderColor,
                 }}>
+                {/* A camera, not a play triangle. The triangle is a promise that
+                    something will start, and nothing will. */}
                 <View
                   style={{
                     width: 72,
@@ -64,7 +81,7 @@ export default function GuideScreen() {
                     borderColor: k.borderColor,
                     boxShadow: brutal ? `3px 3px 0 0 ${INK}` : '0 4px 14px 0 rgba(15,23,42,0.22)',
                   }}>
-                  <Icon name="play" size={30} color={brutal ? INK : k.accent} />
+                  <Icon name="video" size={30} color={k.muted} strokeWidth={2.2} />
                 </View>
 
                 <View
@@ -72,20 +89,20 @@ export default function GuideScreen() {
                     position: 'absolute',
                     bottom: 10,
                     right: 12,
-                    paddingVertical: 4,
-                    paddingHorizontal: 9,
-                    borderRadius: k.rSm,
-                    backgroundColor: brutal ? '#fff' : 'rgba(15,23,42,0.85)',
+                    paddingVertical: 5,
+                    paddingHorizontal: 11,
+                    borderRadius: k.rPill,
+                    backgroundColor: brutal ? k.yellow : k.chip,
                     borderWidth: brutal ? 2 : 0,
                     borderColor: INK,
                   }}>
                   <Text
                     style={{
                       fontFamily: font(700),
-                      fontSize: fs(13),
-                      color: brutal ? INK : '#fff',
+                      fontSize: fs(13.5),
+                      color: brutal ? INK : k.chipInk,
                     }}>
-                    {length}
+                    {t.videoSoonBadge}
                   </Text>
                 </View>
               </View>

@@ -43,6 +43,33 @@ export function archiveFormatOf(name: string): ArchiveFormat | null {
 }
 
 /**
+ * The format an archive's own first bytes declare.
+ *
+ * This is the only source of truth that cannot be wrong. Names are what the
+ * sending app felt like calling the file, MIME types are what a content provider
+ * guessed, but the signature is written into the format itself. Everything else
+ * here is a fallback for when these bytes are unreadable.
+ *
+ * `head` needs to be at least 8 bytes; fewer is not an archive of any kind.
+ */
+export function archiveFormatFromBytes(head: Uint8Array): ArchiveFormat | null {
+  if (head.length < 8) return null;
+
+  const starts = (...signature: number[]) => signature.every((byte, i) => head[i] === byte);
+
+  // "PK" — the local file header, but also the empty and spanned variants, so
+  // only the first two bytes plus a plausible third are checked.
+  if (starts(0x50, 0x4b) && (head[2] === 0x03 || head[2] === 0x05 || head[2] === 0x07)) {
+    return 'zip';
+  }
+  // "Rar!\x1A\x07" then 0x00 for RAR4 and 0x01 for RAR5. Both read as "rar".
+  if (starts(0x52, 0x61, 0x72, 0x21, 0x1a, 0x07)) return 'rar';
+  if (starts(0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c)) return '7z';
+
+  return null;
+}
+
+/**
  * The format a content provider is claiming, for files that arrive without a
  * usable name.
  *
