@@ -7,7 +7,7 @@ import { AppHeader } from '@/components/app-header';
 import { BigButton, Card, Heading, Segmented, Sub, Toggle } from '@/components/ui';
 import type { Lang } from '@/i18n/strings';
 import { useApp, type Settings } from '@/state/app-state';
-import type { ThemeName } from '@/theme/tokens';
+import type { ThemePreference } from '@/theme/tokens';
 
 const TOGGLE_KEYS: (keyof Settings)[] = ['bigText', 'sounds', 'askBeforeSave'];
 
@@ -34,7 +34,7 @@ export default function SettingsScreen() {
             borderColor: k.borderColor,
             boxShadow: k.cardShadow,
           }}>
-          <Row label={t.langRow} sub={t.langRowSub}>
+          <Row label={t.langRow} sub={t.langRowSub} stacked>
             <Segmented
               options={[
                 { key: 'en', label: 'EN' },
@@ -45,14 +45,15 @@ export default function SettingsScreen() {
             />
           </Row>
 
-          <Row label={t.look} sub={t.lookSub}>
+          <Row label={t.look} sub={t.lookSub} stacked>
             <Segmented
               options={[
-                { key: 'minimal', label: t.minimal },
-                { key: 'brutal', label: t.brutal },
+                { key: 'system', label: t.themeSystem },
+                { key: 'light', label: t.themeLight },
+                { key: 'dark', label: t.themeDark },
               ]}
               value={theme}
-              onChange={(key) => setTheme(key as ThemeName)}
+              onChange={(key) => setTheme(key as ThemePreference)}
             />
           </Row>
 
@@ -148,31 +149,41 @@ function StorageCard() {
   );
 }
 
+/**
+ * One setting.
+ *
+ * `stacked` puts the control on its own line under the label instead of beside
+ * it. The pickers need it: three options with words like "Follow phone" in them
+ * cannot share a line with a label and still be readable, and they get worse as
+ * soon as the bigger-text setting is on. A switch is happy on the right.
+ */
 function Row({
   label,
   sub,
   children,
   last = false,
+  stacked = false,
 }: {
   label: string;
   sub: string;
   children: ReactNode;
   last?: boolean;
+  stacked?: boolean;
 }) {
   const { k } = useApp();
   return (
     <View
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: stacked ? 'column' : 'row',
+        alignItems: stacked ? 'stretch' : 'center',
         justifyContent: 'space-between',
-        gap: 14,
+        gap: stacked ? 14 : 14,
         paddingHorizontal: 18,
         paddingVertical: 20,
-        borderBottomWidth: last ? 0 : k.bw > 0 ? 3 : 2,
+        borderBottomWidth: last ? 0 : 2,
         borderBottomColor: k.divider,
       }}>
-      <View style={{ flex: 1, minWidth: 0 }}>
+      <View style={{ flex: stacked ? undefined : 1, minWidth: 0 }}>
         <Heading size={18}>{label}</Heading>
         <Sub style={{ marginTop: 4 }}>{sub}</Sub>
       </View>

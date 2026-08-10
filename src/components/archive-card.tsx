@@ -5,7 +5,6 @@ import { BigButton, Card, GhostButton, Heading, Label } from '@/components/ui';
 import type { Archive } from '@/data/archives';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /**
  * One archive, one card, one green button. Everything above the button is
@@ -23,7 +22,6 @@ export function ArchiveCard({
   onDelete: () => void;
 }) {
   const { k, t, savedIds } = useApp();
-  const brutal = k.bw > 0;
   const saved = savedIds.includes(archive.id);
 
   return (
@@ -36,18 +34,18 @@ export function ArchiveCard({
             borderRadius: k.rSm,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: brutal ? k.tile.photo : k.accentSoft,
-            borderWidth: brutal ? 3 : 2,
+            backgroundColor: k.accentSoft,
+            borderWidth: 2,
             borderColor: k.accentLine,
           }}>
-          <Icon name="archive" size={30} color={brutal ? INK : k.accent} />
+          <Icon name="archive" size={30} color={k.accent} />
           <Text
             style={{
               fontFamily: font(800),
               fontSize: 11,
               letterSpacing: 0.8,
               marginTop: 3,
-              color: brutal ? INK : k.accent,
+              color: k.accent,
             }}>
             {archive.ext}
           </Text>
@@ -104,7 +102,6 @@ export function ArchiveCard({
 
 function Chip({ text, tone = 'default' }: { text: string; tone?: 'default' | 'mint' }) {
   const { k, fs } = useApp();
-  const brutal = k.bw > 0;
   return (
     <View
       style={{
@@ -112,8 +109,6 @@ function Chip({ text, tone = 'default' }: { text: string; tone?: 'default' | 'mi
         paddingHorizontal: 11,
         borderRadius: k.rPill,
         backgroundColor: tone === 'mint' ? k.mint : k.chip,
-        borderWidth: brutal ? 2 : 0,
-        borderColor: INK,
       }}>
       <Text
         style={{

@@ -18,7 +18,6 @@ import type { Archive, ArchiveSource } from '@/data/archives';
 import { listen } from '@/speech';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 type Filter = 'all' | 'new' | 'saved';
 
@@ -198,7 +197,7 @@ export default function HomeScreen() {
           icon="archive-down"
           onPress={() => void openPicker()}
           background={k.bw > 0 ? k.accentSoft : k.accent}
-          ink={k.bw > 0 ? INK : '#fff'}
+          ink={'#FFFFFF'}
           shadow={k.accentShadow}
           style={{ marginTop: 14 }}
         />
@@ -327,8 +326,6 @@ function QuickAction({
   onPress: () => void;
 }) {
   const { k, fs } = useApp();
-  const brutal = k.bw > 0;
-  const background = brutal ? (tone === 'mint' ? k.mint : k.yellow) : k.surface;
 
   return (
     <Pressable
@@ -343,9 +340,9 @@ function QuickAction({
         paddingVertical: 18,
         paddingHorizontal: 16,
         borderRadius: k.r,
-        backgroundColor: active && !brutal ? k.accentSoft : background,
-        borderWidth: brutal ? 3 : active ? 3 : 0,
-        borderColor: brutal ? INK : k.accent,
+        backgroundColor: active ? k.accentSoft : k.surface,
+        borderWidth: active ? 3 : 0,
+        borderColor: k.accent,
         boxShadow: pressed ? 'none' : k.cardShadow,
         transform: [{ translateY: pressed ? 2 : 0 }],
       })}>
@@ -356,14 +353,14 @@ function QuickAction({
           borderRadius: k.rSm,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: brutal ? '#FFFFFF' : tone === 'mint' ? k.accentSoft : '#ECFDF5',
+          backgroundColor: tone === 'mint' ? k.accentSoft : k.mint,
           borderWidth: k.bw,
           borderColor: k.borderColor,
         }}>
         <Icon
           name={icon}
           size={26}
-          color={brutal ? INK : tone === 'mint' ? k.accent : k.action}
+          color={tone === 'mint' ? k.accent : k.action}
         />
       </View>
 
@@ -388,7 +385,7 @@ function QuickAction({
             borderWidth: k.bw,
             borderColor: k.borderColor,
           }}>
-          <Text style={{ fontFamily: font(800), fontSize: fs(16), color: '#fff' }}>{badge}</Text>
+          <Text style={{ fontFamily: font(800), fontSize: fs(16), color: '#FFFFFF' }}>{badge}</Text>
         </View>
       ) : null}
     </Pressable>

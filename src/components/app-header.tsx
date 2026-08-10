@@ -5,7 +5,6 @@ import { Icon } from '@/components/icon';
 import { Heading } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /**
  * Sits above every screen: the app's name, and a search box only where there is
@@ -25,7 +24,6 @@ export function AppHeader({
 }) {
   const { k, t, fs } = useApp();
   const insets = useSafeAreaInsets();
-  const brutal = k.bw > 0;
 
   return (
     <View
@@ -35,8 +33,8 @@ export function AppHeader({
         paddingBottom: 16,
         gap: 13,
         backgroundColor: k.surface,
-        borderBottomWidth: brutal ? 3 : 0,
-        borderBottomColor: INK,
+        borderBottomWidth: k.bw,
+        borderBottomColor: k.borderColor,
         boxShadow: k.headShadow,
         zIndex: 2,
       }}>
@@ -48,12 +46,11 @@ export function AppHeader({
             borderRadius: k.rSm,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: brutal ? k.accentSoft : k.accent,
+            backgroundColor: k.accent,
             borderWidth: k.bw,
             borderColor: k.borderColor,
-            boxShadow: brutal ? `3px 3px 0 0 ${INK}` : 'none',
           }}>
-          <Icon name="archive" size={26} color={brutal ? INK : '#fff'} />
+          <Icon name="archive" size={26} color="#FFFFFF" />
         </View>
         <Heading size={25} numberOfLines={1}>
           EzUnpack
@@ -70,17 +67,16 @@ export function AppHeader({
             paddingLeft: 15,
             paddingRight: 8,
             borderRadius: k.rSm,
-            backgroundColor: brutal ? '#FDFBF7' : '#F1F5F9',
-            borderWidth: brutal ? 3 : 2,
-            borderColor: brutal ? INK : '#E2E8F0',
-            boxShadow: brutal ? `3px 3px 0 0 ${INK}` : 'none',
+            backgroundColor: k.sunken,
+            borderWidth: 2,
+            borderColor: k.line,
           }}>
           <Icon name="search" size={22} color={k.muted} strokeWidth={2.3} />
           <TextInput
             value={query}
             onChangeText={onQuery}
             placeholder={t.search}
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={k.muted}
             style={{
               flex: 1,
               minWidth: 0,
@@ -100,11 +96,11 @@ export function AppHeader({
               borderRadius: k.rSm,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: brutal ? k.action : k.accent,
+              backgroundColor: k.accent,
               borderWidth: k.bw,
               borderColor: k.borderColor,
             }}>
-            <Icon name="mic" size={24} color={brutal ? INK : '#fff'} strokeWidth={2.3} />
+            <Icon name="mic" size={24} color="#FFFFFF" strokeWidth={2.3} />
           </Pressable>
         </View>
       ) : null}

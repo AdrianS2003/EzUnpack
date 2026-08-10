@@ -26,7 +26,6 @@ import {
 } from '@/archive/unpack';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 type Phase = 'reading' | 'list' | 'saving' | 'done' | 'error';
 type SheetError = UnpackFailure | 'empty';
@@ -62,7 +61,6 @@ function Sheet({
 }) {
   const { k, t, fs, settings } = useApp();
   const { width, height } = useWindowDimensions();
-  const brutal = k.bw > 0;
 
   const [entries, setEntries] = useState<ArchiveEntry[]>([]);
   const [phase, setPhase] = useState<Phase>('reading');
@@ -186,10 +184,10 @@ function Sheet({
             transform: [{ translateY: slide }],
             maxHeight: height * 0.85,
             backgroundColor: k.surface,
-            borderTopWidth: brutal ? 3 : 0,
-            borderTopColor: INK,
-            borderTopLeftRadius: brutal ? k.r : 28,
-            borderTopRightRadius: brutal ? k.r : 28,
+            borderTopWidth: k.bw,
+            borderTopColor: k.borderColor,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
             boxShadow: '0 -10px 40px 0 rgba(15,23,42,0.25)',
           }}>
           <ScrollView
@@ -201,13 +199,13 @@ function Sheet({
                 borderRadius: k.rPill,
                 alignSelf: 'center',
                 marginBottom: 16,
-                backgroundColor: brutal ? INK : '#CBD5E1',
+                backgroundColor: k.track,
               }}
             />
 
             {phase === 'reading' ? (
               <View style={{ paddingVertical: 40, alignItems: 'center', gap: 20 }}>
-                <ActivityIndicator size="large" color={brutal ? INK : k.accent} />
+                <ActivityIndicator size="large" color={k.accent} />
                 <Heading size={22} style={{ textAlign: 'center' }}>
                   {t.reading}
                 </Heading>
@@ -239,12 +237,12 @@ function Sheet({
                     style={{
                       width: 48,
                       height: 48,
-                      borderRadius: brutal ? k.rSm : 999,
+                      borderRadius: 999,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: brutal ? k.accentSoft : '#F8FAFC',
-                      borderWidth: brutal ? 3 : 2,
-                      borderColor: brutal ? INK : '#E2E8F0',
+                      backgroundColor: k.sunken,
+                      borderWidth: 2,
+                      borderColor: k.line,
                     }}>
                     <Icon name="close" size={22} color={k.text} strokeWidth={2.5} />
                   </Pressable>
@@ -268,8 +266,8 @@ function Sheet({
                           paddingHorizontal: 10,
                           paddingBottom: 9,
                           backgroundColor: k.tile[file.category],
-                          borderWidth: brutal ? 3 : 2,
-                          borderColor: brutal ? INK : '#E2E8F0',
+                          borderWidth: 2,
+                          borderColor: k.line,
                         }}>
                         <Text
                           style={{
@@ -309,7 +307,7 @@ function Sheet({
               <View style={{ paddingVertical: 26, alignItems: 'center', gap: 20 }}>
                 {stage === 'extracting' ? (
                   <>
-                    <ActivityIndicator size="large" color={brutal ? INK : k.accent} />
+                    <ActivityIndicator size="large" color={k.accent} />
                     <Heading size={22} style={{ textAlign: 'center' }}>
                       {t.extracting}
                     </Heading>
@@ -319,7 +317,7 @@ function Sheet({
                     <Icon
                       name="download"
                       size={52}
-                      color={brutal ? INK : k.accent}
+                      color={k.accent}
                       strokeWidth={2.3}
                     />
                     <Heading size={22}>{t.saving}</Heading>
@@ -327,7 +325,7 @@ function Sheet({
                       style={{
                         width: '100%',
                         height: 18,
-                        borderRadius: brutal ? k.rSm : 999,
+                        borderRadius: 999,
                         overflow: 'hidden',
                         backgroundColor: k.track,
                         borderWidth: k.bw,
@@ -349,15 +347,15 @@ function Sheet({
                   style={{
                     width: 96,
                     height: 96,
-                    borderRadius: brutal ? k.rSm : 999,
+                    borderRadius: 999,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: k.mint,
                     borderWidth: 3,
-                    borderColor: brutal ? INK : '#A7F3D0',
+                    borderColor: k.mintLine,
                     transform: [{ scale: pop }],
                   }}>
-                  <Icon name="check" size={46} color={brutal ? INK : '#059669'} strokeWidth={2.7} />
+                  <Icon name="check" size={46} color={k.mintInk} strokeWidth={2.7} />
                 </Animated.View>
                 <Heading size={24} style={{ textAlign: 'center' }}>
                   {t.doneTitle}
@@ -369,8 +367,8 @@ function Sheet({
                   <BigButton
                     label={t.openPhotos}
                     onPress={() => void openInGallery(result.firstAssetId!)}
-                    background={brutal ? k.accentSoft : k.accent}
-                    ink={brutal ? INK : '#fff'}
+                    background={k.accent}
+                    ink="#FFFFFF"
                     shadow={k.accentShadow}
                     style={{ marginTop: 6 }}
                   />
@@ -385,12 +383,10 @@ function Sheet({
                   style={{
                     width: 88,
                     height: 88,
-                    borderRadius: brutal ? k.rSm : 999,
+                    borderRadius: 999,
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: k.yellow,
-                    borderWidth: brutal ? 3 : 0,
-                    borderColor: INK,
                   }}>
                   <Icon name="info" size={44} color={k.yellowInk} strokeWidth={2.4} />
                 </View>

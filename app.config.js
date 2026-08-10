@@ -25,7 +25,9 @@ module.exports = {
     version: '1.0.0',
     scheme: 'ezunpack',
     orientation: 'portrait',
-    userInterfaceStyle: 'light',
+    // The app follows the phone's light/dark setting unless the user overrides
+    // it in Settings, so the shell must be allowed to do the same.
+    userInterfaceStyle: 'automatic',
     icon: './assets/images/icon.png',
     plugins: [
       'expo-router',

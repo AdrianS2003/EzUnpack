@@ -13,7 +13,6 @@ import { Icon, type IconName } from '@/components/icon';
 import { Heading, Label, Note, Sub } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /**
  * An unpacked archive, shown as a folder.
@@ -33,7 +32,6 @@ export function FolderSheet({
 }) {
   const { k, t, fs } = useApp();
   const insets = useSafeAreaInsets();
-  const brutal = k.bw > 0;
   const [busy, setBusy] = useState<string | null>(null);
 
   const open = useCallback(async (item: ContentItem) => {
@@ -80,8 +78,8 @@ export function FolderSheet({
             alignItems: 'flex-start',
             gap: 12,
             backgroundColor: k.surface,
-            borderBottomWidth: brutal ? 3 : 0,
-            borderBottomColor: INK,
+            borderBottomWidth: k.bw,
+            borderBottomColor: k.borderColor,
             boxShadow: k.headShadow,
           }}>
           <View style={{ flex: 1, minWidth: 0 }}>
@@ -97,12 +95,12 @@ export function FolderSheet({
             style={{
               width: 48,
               height: 48,
-              borderRadius: brutal ? k.rSm : 999,
+              borderRadius: 999,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: brutal ? k.accentSoft : '#F8FAFC',
-              borderWidth: brutal ? 3 : 2,
-              borderColor: brutal ? INK : '#E2E8F0',
+              backgroundColor: k.sunken,
+              borderWidth: 2,
+              borderColor: k.line,
             }}>
             <Icon name="close" size={22} color={k.text} strokeWidth={2.5} />
           </Pressable>
@@ -141,8 +139,8 @@ export function FolderSheet({
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: k.tile[item.category],
-                    borderWidth: brutal ? 3 : 2,
-                    borderColor: brutal ? INK : '#E2E8F0',
+                    borderWidth: 2,
+                    borderColor: k.line,
                   }}>
                   <Text
                     style={{
@@ -238,7 +236,6 @@ function RowAction({
   onPress: () => void;
 }) {
   const { k, fs } = useApp();
-  const brutal = k.bw > 0;
 
   return (
     <Pressable
@@ -254,9 +251,7 @@ function RowAction({
         gap: 8,
         paddingHorizontal: 10,
         borderRadius: k.rSm,
-        backgroundColor: brutal ? k.accentSoft : '#F1F5F9',
-        borderWidth: brutal ? 2 : 0,
-        borderColor: INK,
+        backgroundColor: k.sunken,
         transform: [{ translateY: pressed ? 2 : 0 }],
       })}>
       <Icon name={icon} size={21} color={k.text} strokeWidth={2.3} />

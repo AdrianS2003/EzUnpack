@@ -5,7 +5,6 @@ import { Icon } from '@/components/icon';
 import { Heading, Note, Sub } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /**
  * The audience for this app learns by watching, not by reading. Big thumbnails,
@@ -13,7 +12,6 @@ import { INK } from '@/theme/tokens';
  */
 export default function GuideScreen() {
   const { k, t, fs } = useApp();
-  const brutal = k.bw > 0;
 
   return (
     <View style={{ flex: 1, backgroundColor: k.bg }}>
@@ -63,7 +61,7 @@ export default function GuideScreen() {
                   height: 152,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: brutal ? k.tile.video : '#CBD5E1',
+                  backgroundColor: k.tile.video,
                   borderBottomWidth: k.bw,
                   borderBottomColor: k.borderColor,
                 }}>
@@ -73,13 +71,13 @@ export default function GuideScreen() {
                   style={{
                     width: 72,
                     height: 72,
-                    borderRadius: brutal ? k.rSm : 999,
+                    borderRadius: 999,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#fff',
+                    backgroundColor: k.surface,
                     borderWidth: k.bw,
                     borderColor: k.borderColor,
-                    boxShadow: brutal ? `3px 3px 0 0 ${INK}` : '0 4px 14px 0 rgba(15,23,42,0.22)',
+                    boxShadow: '0 4px 14px 0 rgba(15,23,42,0.22)',
                   }}>
                   <Icon name="video" size={30} color={k.muted} strokeWidth={2.2} />
                 </View>
@@ -92,15 +90,13 @@ export default function GuideScreen() {
                     paddingVertical: 5,
                     paddingHorizontal: 11,
                     borderRadius: k.rPill,
-                    backgroundColor: brutal ? k.yellow : k.chip,
-                    borderWidth: brutal ? 2 : 0,
-                    borderColor: INK,
+                    backgroundColor: k.chip,
                   }}>
                   <Text
                     style={{
                       fontFamily: font(700),
                       fontSize: fs(13.5),
-                      color: brutal ? INK : k.chipInk,
+                      color: k.chipInk,
                     }}>
                     {t.videoSoonBadge}
                   </Text>

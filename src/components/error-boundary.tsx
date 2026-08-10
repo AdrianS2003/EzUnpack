@@ -6,7 +6,6 @@ import { Icon } from '@/components/icon';
 import { BigButton, GhostButton, Heading, Sub } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { openReport } from '@/support';
-import { INK } from '@/theme/tokens';
 
 /**
  * The screen shown instead of the app vanishing.
@@ -24,7 +23,6 @@ import { INK } from '@/theme/tokens';
 function CrashScreen({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   const { k, t } = useApp();
   const insets = useSafeAreaInsets();
-  const brutal = k.bw > 0;
 
   const report = useCallback(async () => {
     const opened = await openReport(t.crashMailSubject, t.crashMailPrompt, error);
@@ -47,12 +45,10 @@ function CrashScreen({ error, onRetry }: { error: unknown; onRetry: () => void }
           style={{
             width: 96,
             height: 96,
-            borderRadius: brutal ? k.rSm : 999,
+            borderRadius: 999,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: k.yellow,
-            borderWidth: brutal ? 3 : 0,
-            borderColor: INK,
           }}>
           <Icon name="info" size={48} color={k.yellowInk} strokeWidth={2.4} />
         </View>

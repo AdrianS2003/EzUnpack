@@ -59,7 +59,9 @@ function Shell() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      {/* Follows the theme rather than being fixed: dark icons on a dark header
+          would be invisible, and the header is the first thing on every screen. */}
+      <StatusBar style={k.bar} />
       <Tabs
         tabBar={(props) => <TabBar {...props} />}
         screenOptions={{

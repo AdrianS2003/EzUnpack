@@ -47,8 +47,9 @@ export type Strings = {
   savedTag: string;
   look: string;
   lookSub: string;
-  minimal: string;
-  brutal: string;
+  themeLight: string;
+  themeDark: string;
+  themeSystem: string;
   found: (n: number) => string;
   inside: (n: number) => string;
   hint: string;
@@ -164,9 +165,10 @@ const en: Strings = {
   unpackAgain: 'SAVE AGAIN',
   savedTag: 'Saved',
   look: 'Look',
-  lookSub: 'Two ways to see the app',
-  minimal: 'Minimalist',
-  brutal: 'Bold',
+  lookSub: 'Follows your phone unless you choose',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+  themeSystem: 'Follow phone',
   found: (n) => `${n} found`,
   inside: (n) => `${n} files inside`,
   hint: 'Send an archive to EzUnpack from WhatsApp or Email, or open it with the button above. We keep our own copy, so you can always find it again here.',
@@ -304,9 +306,10 @@ const ro: Strings = {
   unpackAgain: 'SALVEAZĂ DIN NOU',
   savedTag: 'Salvat',
   look: 'Aspect',
-  lookSub: 'Două feluri de a vedea aplicația',
-  minimal: 'Minimalist',
-  brutal: 'Îndrăzneț',
+  lookSub: 'Urmează telefonul, dacă nu alegi tu',
+  themeLight: 'Luminos',
+  themeDark: 'Întunecat',
+  themeSystem: 'Ca telefonul',
   found: (n) => `${n} găsite`,
   inside: (n) => `${n} fișiere înăuntru`,
   hint: 'Trimite o arhivă către EzUnpack din WhatsApp sau Email, ori deschide-o cu butonul de sus. Păstrăm o copie a noastră, ca s-o găsești mereu aici.',

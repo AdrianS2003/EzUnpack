@@ -8,9 +8,16 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useColorScheme } from 'react-native';
 
 import { STRINGS, type Lang, type Strings } from '@/i18n/strings';
-import { TEXT_SCALE, THEMES, type ThemeName, type Tokens } from '@/theme/tokens';
+import {
+  TEXT_SCALE,
+  THEMES,
+  type ThemeName,
+  type ThemePreference,
+  type Tokens,
+} from '@/theme/tokens';
 
 const STORAGE_KEY = 'ezunpack.prefs.v1';
 
@@ -25,7 +32,8 @@ export type Settings = {
 
 type Prefs = {
   lang: Lang;
-  theme: ThemeName;
+  /** What the user picked, which may be "follow the phone". */
+  theme: ThemePreference;
   settings: Settings;
   /** True once the first-run explanation has been shown and acted on. */
   onboarded: boolean;
@@ -35,7 +43,7 @@ type Prefs = {
 
 const DEFAULTS: Prefs = {
   lang: 'en',
-  theme: 'minimal',
+  theme: 'system',
   settings: { bigText: false, sounds: true, askBeforeSave: false },
   onboarded: false,
   savedIds: [],
@@ -46,10 +54,12 @@ type AppState = Prefs & {
   t: Strings;
   /** Design tokens for the active theme. */
   k: Tokens;
+  /** Which of the two is actually showing, once "system" is resolved. */
+  themeName: ThemeName;
   /** Scales a font size by the "bigger text" setting. */
   fs: (size: number) => number;
   setLang: (lang: Lang) => void;
-  setTheme: (theme: ThemeName) => void;
+  setTheme: (theme: ThemePreference) => void;
   setSetting: (key: keyof Settings, value: boolean) => void;
   finishOnboarding: () => void;
   markSaved: (id: string) => void;
@@ -108,12 +118,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)).catch(() => {});
   }, [prefs]);
 
+  // The phone's own light/dark setting, which "system" follows. Android users
+  // have usually set this once already, often on their own schedule — switching
+  // on a clock of our own would only fight it.
+  const phoneScheme = useColorScheme();
+
   const value = useMemo<AppState>(() => {
     const scale = prefs.settings.bigText ? TEXT_SCALE.big : TEXT_SCALE.normal;
+    const themeName: ThemeName =
+      prefs.theme === 'system' ? (phoneScheme === 'dark' ? 'dark' : 'light') : prefs.theme;
+
     return {
       ...prefs,
       t: STRINGS[prefs.lang],
-      k: THEMES[prefs.theme],
+      k: THEMES[themeName],
+      themeName,
       fs: (size: number) => Math.round(size * scale * 10) / 10,
       setLang: (lang) => setPrefs((p) => ({ ...p, lang })),
       setTheme: (theme) => setPrefs((p) => ({ ...p, theme })),
@@ -127,7 +146,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ),
       ready,
     };
-  }, [prefs, ready]);
+  }, [phoneScheme, prefs, ready]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -7,7 +7,6 @@ import { Icon } from '@/components/icon';
 import { BigButton, GhostButton, Heading } from '@/components/ui';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /**
  * Shown once, before anything else.
@@ -25,7 +24,6 @@ import { INK } from '@/theme/tokens';
 export function PermissionPrimer() {
   const { k, t, fs, onboarded, finishOnboarding } = useApp();
   const insets = useSafeAreaInsets();
-  const brutal = k.bw > 0;
   const [asking, setAsking] = useState(false);
 
   const accept = useCallback(async () => {
@@ -58,15 +56,14 @@ export function PermissionPrimer() {
               style={{
                 width: 104,
                 height: 104,
-                borderRadius: brutal ? k.rSm : 999,
+                borderRadius: 999,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: brutal ? k.accentSoft : k.accentSoft,
+                backgroundColor: k.accentSoft,
                 borderWidth: k.bw,
                 borderColor: k.borderColor,
-                boxShadow: brutal ? `4px 4px 0 0 ${INK}` : 'none',
               }}>
-              <Icon name="folder-check" size={52} color={brutal ? INK : k.accent} />
+              <Icon name="folder-check" size={52} color={k.accent} />
             </View>
 
             <Heading size={26} style={{ textAlign: 'center' }}>

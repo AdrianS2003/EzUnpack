@@ -22,13 +22,13 @@ their phone; they are not searching for it.
 
 Shown under the title, and the only description most people read.
 
-**English** (58 of 80):
+**English** (59 of 80):
 
 ```
 Open ZIP and RAR files. Photos go straight to your gallery.
 ```
 
-**Romanian** (59 of 80):
+**Romanian** (60 of 80):
 
 ```
 Deschide fișiere ZIP și RAR. Pozele ajung direct în galerie.
@@ -42,7 +42,7 @@ Written for the person who receives the archive, not for the person installing
 the app for them — because the second one reads over the first one's shoulder.
 No feature lists in jargon, and the limitation is stated rather than hidden.
 
-**English** (1,412 of 4,000):
+**English** (1,318 of 4,000):
 
 ```
 Somebody sent you a file and your phone will not open it. It ends in .zip or
@@ -63,7 +63,7 @@ Made for people who do not enjoy fighting with phones:
 • Nothing gets lost. Every archive is kept in the app, so you can always find it
   again — and delete it when you are done.
 • Romanian and English, following your phone.
-• A bold, high-contrast look and larger text, for eyes that need them.
+• Light and dark, following your phone, and larger text for eyes that need it.
 • Search by voice, if typing is hard.
 
 Opens ZIP, RAR and 7z files.
@@ -75,7 +75,7 @@ One thing it cannot do: archives locked with a password. If the sender protected
 it, EzUnpack cannot open it, and it will tell you so instead of failing quietly.
 ```
 
-**Romanian** (1,489 of 4,000):
+**Romanian** (1,400 of 4,000):
 
 ```
 Ți-a trimis cineva un fișier și telefonul nu-l deschide. Se termină în .zip sau
@@ -97,8 +97,8 @@ Făcut pentru oameni care nu se bat cu plăcere cu telefonul:
 • Nimic nu se pierde. Fiecare arhivă rămâne în aplicație, ca să o regăsești
   oricând — și o ștergi când nu-ți mai trebuie.
 • Română și engleză, după cum e telefonul tău.
-• Un aspect îndrăzneț, cu contrast puternic, și text mai mare, pentru ochii care
-  au nevoie.
+• Luminos și întunecat, după cum e telefonul tău, și text mai mare pentru ochii
+  care au nevoie.
 • Căutare prin voce, dacă scrisul e greu.
 
 Deschide fișiere ZIP, RAR și 7z.

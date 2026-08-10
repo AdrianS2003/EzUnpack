@@ -13,8 +13,8 @@ The design rules that drive every decision in this repo:
   and can show them.
 - **Nothing gets lost.** Every archive handed to the app is copied into the
   app's own folder, so it survives restarts and expiring permissions.
-- **Two looks.** *Minimalist* is the calm default. *Bold* is a high-contrast,
-  thick-border theme for weaker eyesight.
+- **Light and dark**, following the phone's own setting unless the user says
+  otherwise. One layout; only the ground and the ink change.
 - **Romanian and English**, following the phone's language on first launch.
 
 ## What works today
@@ -47,7 +47,7 @@ The whole path is real — a file goes in, photos come out in the gallery:
   minimal theme is built from the logo blue `#386C96`.
 - A **first-run screen** explaining the gallery permission in plain words before
   Android's own dialog appears.
-- Both themes, both languages, bigger text, confirm-before-saving — all
+- Light and dark, both languages, bigger text, confirm-before-saving — all
   persisted across restarts.
 - **A crash screen instead of the app vanishing**, which offers to open the
   user's mail app with the details already written. Nothing is sent by the app
@@ -111,7 +111,7 @@ src/
   data/                   the Archive and ArchiveEntry shapes
   i18n/                   every user-facing string, EN + RO
   state/                  preferences, persisted
-  theme/                  the two design token sets + font weights
+  theme/                  the light and dark token sets + font weights
   speech.ts               voice search, borrowed from the phone's own dialog
 archive-mime-types.json   shared by the picker and the intent filter
 ```

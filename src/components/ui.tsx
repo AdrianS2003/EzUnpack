@@ -11,7 +11,6 @@ import {
 import { Icon, type IconName } from '@/components/icon';
 import { useApp } from '@/state/app-state';
 import { font } from '@/theme/fonts';
-import { INK } from '@/theme/tokens';
 
 /* ------------------------------------------------------------------ text */
 
@@ -33,11 +32,10 @@ export function Heading({
       numberOfLines={numberOfLines}
       style={[
         {
-          fontFamily: font(k.heading === '900' ? 900 : 700),
+          fontFamily: font(700),
           fontSize: fs(size),
           color: k.text,
           letterSpacing: k.ls,
-          textTransform: k.upper,
           lineHeight: fs(size) * 1.2,
         },
         style,
@@ -192,11 +190,9 @@ export function BigButton({
       {icon ? <Icon name={icon} size={25} color={color} strokeWidth={2.4} /> : null}
       <Text
         style={{
-          fontFamily: font(k.heading === '900' ? 900 : 700),
+          fontFamily: font(700),
           fontSize: fs(19.5),
           color,
-          letterSpacing: k.upper === 'uppercase' ? 0.4 : 0,
-          textTransform: k.upper,
           textAlign: 'center',
           lineHeight: fs(19.5) * 1.2,
         }}>
@@ -241,7 +237,7 @@ export function GhostButton({
         borderRadius: k.rSm,
         // A pressed ghost button has no shadow to sink into, so the tint is the
         // only thing that tells the user the tap landed.
-        backgroundColor: pressed ? (tone === 'danger' ? k.dangerSoft : k.track) : 'transparent',
+        backgroundColor: pressed ? (tone === 'danger' ? k.dangerSoft : k.sunken) : 'transparent',
       })}>
       {icon ? <Icon name={icon} size={22} color={color} strokeWidth={2.3} /> : null}
       <Text style={{ fontFamily: font(700), fontSize: fs(18), color }}>{label}</Text>
@@ -253,7 +249,14 @@ export function GhostButton({
 
 export type SegmentOption = { key: string; label: string };
 
-/** Language and theme pickers. Two options, always both visible, never a menu. */
+/**
+ * Language and theme pickers. Every option visible at once, never a menu.
+ *
+ * The options share the width equally rather than sizing to their text, so that
+ * three long words — "Follow phone", "Întunecat" — still fit on a narrow phone
+ * with the bigger-text setting on. That means it needs a parent that gives it a
+ * width, which is why the settings rows stack the control under its label.
+ */
 export function Segmented({
   options,
   value,
@@ -264,7 +267,6 @@ export function Segmented({
   onChange: (key: string) => void;
 }) {
   const { k, fs } = useApp();
-  const brutal = k.bw > 0;
 
   return (
     <View
@@ -274,9 +276,9 @@ export function Segmented({
         gap: 6,
         padding: 5,
         borderRadius: k.rPill + 5,
-        backgroundColor: brutal ? '#F5F1E8' : '#F1F5F9',
-        borderWidth: brutal ? 3 : 2,
-        borderColor: brutal ? INK : '#E2E8F0',
+        backgroundColor: k.sunken,
+        borderWidth: 2,
+        borderColor: k.line,
       }}>
       {options.map((option) => {
         const on = option.key === value;
@@ -287,22 +289,20 @@ export function Segmented({
             accessibilityState={{ selected: on }}
             onPress={() => onChange(option.key)}
             style={{
-              minWidth: 60,
+              flex: 1,
               minHeight: 48,
-              paddingHorizontal: 15,
+              paddingHorizontal: 8,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: k.rPill,
-              borderWidth: brutal ? 2 : 0,
-              borderColor: brutal ? INK : 'transparent',
-              backgroundColor: on ? (brutal ? k.accentSoft : k.accent) : 'transparent',
+              backgroundColor: on ? k.accent : 'transparent',
             }}>
             <Text
+              numberOfLines={1}
               style={{
-                fontFamily: font(brutal ? 800 : 700),
+                fontFamily: font(700),
                 fontSize: fs(15.5),
-                textTransform: k.upper,
-                color: on ? (brutal ? INK : '#fff') : k.muted,
+                color: on ? '#FFFFFF' : k.muted,
               }}>
               {option.label}
             </Text>
@@ -324,7 +324,6 @@ export function Toggle({
   label: string;
 }) {
   const { k } = useApp();
-  const brutal = k.bw > 0;
 
   return (
     <Pressable
@@ -338,20 +337,20 @@ export function Toggle({
         padding: 4,
         justifyContent: 'center',
         alignItems: value ? 'flex-end' : 'flex-start',
-        borderRadius: brutal ? k.rSm : 999,
+        borderRadius: 999,
         backgroundColor: value ? k.action : k.track,
         borderWidth: k.bw,
         borderColor: k.borderColor,
       }}>
+      {/* The knob stays white in both themes: it is the moving part of a
+          switch, and it has to read against the green as well as the track. */}
       <View
         style={{
           width: 36,
           height: 36,
-          borderRadius: brutal ? 2 : 999,
-          backgroundColor: '#fff',
-          borderWidth: brutal ? 2 : 0,
-          borderColor: INK,
-          boxShadow: brutal ? 'none' : '0 2px 5px 0 rgba(15,23,42,0.25)',
+          borderRadius: 999,
+          backgroundColor: '#FFFFFF',
+          boxShadow: '0 2px 5px 0 rgba(15,23,42,0.25)',
         }}
       />
     </Pressable>
@@ -384,9 +383,8 @@ export function Note({
           padding: 16,
           borderRadius: tone === 'yellow' ? k.r : k.rSm,
           backgroundColor: bg,
-          borderWidth: k.bw > 0 ? k.bw : tone === 'mint' ? 2 : 0,
-          borderColor: k.bw > 0 ? INK : '#A7F3D0',
-          boxShadow: k.bw > 0 ? k.flatShadow : 'none',
+          borderWidth: tone === 'mint' ? 2 : 0,
+          borderColor: k.mintLine,
         },
         style,
       ]}>
