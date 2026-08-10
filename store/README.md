@@ -7,7 +7,7 @@ bundled or shipped.
 
 | File | What it is for |
 | --- | --- |
-| `privacy-policy.md` | Host it somewhere public, then paste the URL into the console. Has two `TODO` placeholders for your email. |
+| `privacy-policy.md` | Host it somewhere public, then paste the URL into the console. Complete — contact address filled in. |
 | `listing.md` | Title, short and full descriptions in English and Romanian, plus what to photograph for the screenshots. |
 | `data-safety.md` | Every answer for the Data Safety form and the content rating questionnaire, with the reasoning. |
 | `play-icon-512.png` | The 512 × 512 store icon, flattened onto white. Play rejects an alpha channel, so this one has none — verified, not assumed. |
@@ -36,9 +36,14 @@ bundled or shipped.
 
 ## Left to do, in this order
 
-**1. Fill in the two `TODO`s in `privacy-policy.md` and host it.**
-A GitHub Pages site on this repo is enough — the file is already Markdown. The
-URL is a required field, so nothing else can proceed without it.
+**1. Host `privacy-policy.md`.**
+A GitHub Pages site on this repo is enough — the file is already Markdown and
+needs no edits. The URL is a required field in the console, so nothing else can
+proceed without it.
+
+The same address, `sacomplex.media@gmail.com`, is the contact in the policy, the
+`To:` line on the app's crash screen (`src/support.ts`), and the developer
+contact in the listing. Change one and change all three.
 
 **2. Take the screenshots.** `listing.md` says which four and what to avoid.
 This is the only part that needs a phone and cannot be written in advance. Put a

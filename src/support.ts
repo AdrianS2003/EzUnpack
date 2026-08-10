@@ -5,10 +5,10 @@ import { Linking, Platform } from 'react-native';
  * The address a report is addressed to.
  *
  * Every user of the app can see this: it is the `To:` line of the message their
- * mail app opens. Swap it for a dedicated inbox before publishing if you would
- * rather not put a personal address in front of a store audience.
+ * mail app opens. It is also the contact address in the privacy policy and in
+ * the Play listing, so the three should be changed together.
  */
-export const SUPPORT_EMAIL = 'adystefan2003@gmail.com';
+export const SUPPORT_EMAIL = 'sacomplex.media@gmail.com';
 
 /** So a report says more than "it broke". */
 function phone(): string {

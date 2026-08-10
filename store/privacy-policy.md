@@ -2,7 +2,7 @@
 
 **Last updated:** 30 July 2026
 **App:** EzUnpack (`com.ezunpack.app`)
-**Contact:** `TODO: your email address`
+**Contact:** sacomplex.media@gmail.com
 
 > **Draft.** Every factual claim below was checked against the source code, but
 > this is not legal advice. Read it, put your own name and email in, and satisfy
@@ -78,7 +78,7 @@ with a new date at the top.
 
 ## Contact
 
-Questions about this policy: `TODO: your email address`
+Questions about this policy: sacomplex.media@gmail.com
 
 ---
 
@@ -86,7 +86,7 @@ Questions about this policy: `TODO: your email address`
 
 **Ultima actualizare:** 30 iulie 2026
 **Aplicația:** EzUnpack (`com.ezunpack.app`)
-**Contact:** `TODO: adresa ta de e-mail`
+**Contact:** sacomplex.media@gmail.com
 
 ## Pe scurt
 
@@ -158,4 +158,4 @@ adresă, cu o dată nouă în capul paginii.
 
 ## Contact
 
-Întrebări despre această politică: `TODO: adresa ta de e-mail`
+Întrebări despre această politică: sacomplex.media@gmail.com
