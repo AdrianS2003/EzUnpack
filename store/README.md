@@ -19,10 +19,20 @@ bundled or shipped.
 - **All four architectures.** `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64` are in
   `gradle.properties`, so a release bundle covers every device. The
   one-architecture problem only ever affected debug APKs.
-- **16 KB page alignment.** The native archive library is linked with
-  `-Wl,-z,max-page-size=16384`, so it loads on Android 15 devices with 16 KB
-  memory pages. Google requires this of new submissions and it is easy to miss —
-  it is handled.
+- **16 KB page alignment — verified, not assumed.** A release APK was built and
+  `libarchive_native.so` pulled back out of it; every `LOAD` segment reports an
+  alignment of `0x4000`. It will load on Android 15 devices with 16 KB memory
+  pages. Google requires this of new submissions and it is easy to miss.
+
+  ```bash
+  unzip -o app-release.apk lib/arm64-v8a/libarchive_native.so
+  "$ANDROID_HOME"/ndk/*/toolchains/llvm/prebuilt/*/bin/llvm-readelf -l libarchive_native.so
+  ```
+
+- **The release path builds and packages.** `./gradlew -p android :app:assembleRelease`
+  succeeds. The JS bundle is embedded as `assets/index.android.bundle` rather
+  than served by Metro, and all four architectures are present. This is the
+  category of failure a debug build cannot show you.
 - **Target API 36.** Expo SDK 57's default, which satisfies the current
   requirement. Worth confirming against the console at upload; it is a one-line
   check, not a task.
