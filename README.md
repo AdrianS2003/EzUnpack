@@ -49,6 +49,9 @@ The whole path is real — a file goes in, photos come out in the gallery:
   Android's own dialog appears.
 - Both themes, both languages, bigger text, confirm-before-saving — all
   persisted across restarts.
+- **A crash screen instead of the app vanishing**, which offers to open the
+  user's mail app with the details already written. Nothing is sent by the app
+  itself, so no report leaves a phone unasked — see [`src/support.ts`](src/support.ts).
 
 Still missing rather than simulated:
 
@@ -159,9 +162,9 @@ this point is guesswork until someone who has never seen the app tries to open a
 photo their grandchild sent them.
 
 **Later.** The video guides, which the audience will use more than any written
-help. A sound on save. An email address for feedback. A Play Store listing,
-which brings its own list: a privacy policy, a target API level, a signed
-release build, and store artwork.
+help. A sound on save. A permanent "write to us" row in Settings — the address
+currently only appears on the crash screen. A Play Store listing, which brings
+its own list: see [`store/`](store), where most of it is already written.
 
 **The open question: automatic discovery.** The original idea was that the app
 finds archives by itself and the user never browses folders. That promise is

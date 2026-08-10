@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ErrorBoundary } from '@/components/error-boundary';
 import { PermissionPrimer } from '@/components/permission-primer';
 import { TabBar } from '@/components/tab-bar';
 import { AppProvider, useApp } from '@/state/app-state';
@@ -35,7 +36,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <Shell />
+        {/* Inside the provider on purpose: the screen it falls back to still
+            needs the user's language and theme to say anything useful. */}
+        <ErrorBoundary>
+          <Shell />
+        </ErrorBoundary>
       </AppProvider>
     </SafeAreaProvider>
   );

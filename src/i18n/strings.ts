@@ -133,6 +133,14 @@ export type Strings = {
   errorDelete: string;
   errorNoVoice: string;
   errorSaveToPhone: string;
+  /** The screen shown instead of the app closing on an unexpected error. */
+  crashTitle: string;
+  crashBody: string;
+  crashSend: string;
+  crashRetry: string;
+  crashMailSubject: string;
+  crashMailPrompt: string;
+  crashNoMail: string;
   toggles: [string, string][];
   /**
    * Title and one line each. No running times: quoting a length for a video that
@@ -260,6 +268,15 @@ const en: Strings = {
   errorNoVoice: 'This phone cannot listen. You can still type the name in the box above.',
   errorSaveToPhone:
     'The file could not be put there. There may already be one with the same name — try another folder.',
+  crashTitle: 'Something went wrong',
+  crashBody:
+    'This is our mistake, not yours. Nothing has been lost — your photos are still in Photos and your files are still here.\n\nIf you tell us what you were doing, we can fix it.',
+  crashSend: 'Tell us what happened',
+  crashRetry: 'Try again',
+  crashMailSubject: 'EzUnpack stopped working',
+  crashMailPrompt: 'Please write here what you were doing when this happened:',
+  crashNoMail:
+    'No email app could be opened on this phone. Try again after closing and reopening EzUnpack.',
   toggles: [
     ['Bigger text', 'Make all writing larger'],
     ['Louder sounds', 'A sound plays when files are saved'],
@@ -391,6 +408,15 @@ const ro: Strings = {
   errorNoVoice: 'Telefonul acesta nu poate asculta. Poți scrie numele în căsuța de sus.',
   errorSaveToPhone:
     'Fișierul nu a putut fi pus acolo. Poate există deja unul cu același nume — încearcă alt folder.',
+  crashTitle: 'Ceva nu a mers',
+  crashBody:
+    'Este greșeala noastră, nu a ta. Nu s-a pierdut nimic — pozele sunt tot în Poze, iar fișierele tale sunt tot aici.\n\nDacă ne spui ce făceai, o putem repara.',
+  crashSend: 'Spune-ne ce s-a întâmplat',
+  crashRetry: 'Încearcă din nou',
+  crashMailSubject: 'EzUnpack s-a oprit',
+  crashMailPrompt: 'Te rugăm să scrii aici ce făceai când s-a întâmplat:',
+  crashNoMail:
+    'Nu s-a putut deschide nicio aplicație de e-mail pe acest telefon. Încearcă din nou după ce închizi și redeschizi EzUnpack.',
   toggles: [
     ['Text mai mare', 'Mărește toate scrisurile'],
     ['Sunete mai tari', 'Se aude un sunet la salvare'],

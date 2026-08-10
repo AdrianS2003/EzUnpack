@@ -62,12 +62,15 @@ absence of the dev client.
 
 ## Worth doing before a wide audience, not blocking
 
-- **An address people can write to.** There is no way to report a problem from
-  inside the app. This audience will not file a bug report, but the person who
-  set up their phone might.
-- **Crash reporting.** Right now, if the app falls over on somebody else's phone,
-  you never find out. It is the only window you have into a user base that will
-  not tell you anything.
+- **A permanent way to write in.** The support address currently appears only on
+  the crash screen. A "write to us" row in Settings would catch the person who
+  is merely confused rather than crashed — and for this audience those outnumber
+  the crashes.
+- **Richer crash reporting.** Play Console's Android vitals collects native
+  crashes and ANRs for free, with no code, and a fatal JS error reaches it as a
+  native crash. The crash screen adds the user's own account of what they were
+  doing. A tool like Sentry would add readable JS stacks — at the cost of
+  declaring data collection on the store page, which today reads as none.
 - **A pass with TalkBack on.** There are accessibility labels throughout, but
   nobody has yet run the app with the screen reader actually enabled — and this
   audience overlaps heavily with the people who use it.
