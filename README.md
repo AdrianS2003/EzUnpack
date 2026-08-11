@@ -157,9 +157,11 @@ unzip -l app.apk | grep "lib/"
 
 ## Where this goes next
 
-**Soon.** A real app icon. Testing with an actual target user — everything past
-this point is guesswork until someone who has never seen the app tries to open a
-photo their grandchild sent them.
+**Soon.** Testing with an actual target user — everything past this point is
+guesswork until someone who has never seen the app tries to open a photo their
+grandchild sent them. A refined logo from a designer; the brief, including the
+two things an Android icon needs that a designer will not expect, is in
+[`store/logo-brief.md`](store/logo-brief.md).
 
 **Later.** The video guides, which the audience will use more than any written
 help. A sound on save. A permanent "write to us" row in Settings — the address
@@ -173,8 +175,35 @@ modern Android means either broad storage access, which Google grants
 reluctantly, or asking the user to select a folder once, which fits this
 audience badly. It may turn out that *Open with* is enough in practice, and the
 original promise was less necessary than it looked. Worth deciding deliberately
-rather than by default.
+rather than by default — and worth noticing that not delivering it is what makes
+the iOS entry below so much shorter than it used to be.
 
-**iOS, much later.** Sandboxing makes discovery impossible there, so iOS would
-be a share-extension app with a different home screen. The archive engine and
-design system would carry over; the entry points would not.
+**iOS, if ever.** This entry used to say iOS would need a different home screen,
+because sandboxing makes discovery impossible there. That reasoning has expired:
+the Android app never delivered discovery either, so what is built here is
+*already* the arrives-by-share model iOS forces. No second design is needed.
+
+What would actually carry over is nearly everything — the interface, the theme,
+the strings, and the whole TypeScript archive layer, which sits on
+`expo-file-system` and `expo-media-library` and works on both. Only two files in
+`src/` touch anything Android-only: `archive/contents.ts` and `speech.ts`, both
+through `expo-intent-launcher`, which has no iOS side at all.
+
+Three things would have to be written. An iOS build of the native module —
+libarchive is portable C, so the work is a Swift wrapper and a podspec rather
+than a port. Replacements for those two files: opening a document becomes
+QuickLook or the share sheet. And the entry points: `CFBundleDocumentTypes` in
+`Info.plist` for "open in", and a real Share Extension, which is a separate
+binary target handing files over through an App Group.
+
+Voice search is the one genuine loss. The Android version borrows the phone's
+own speech dialog through an intent and therefore never holds the microphone;
+iOS has no equivalent, so it would mean `SFSpeechRecognizer` and declaring
+microphone access — giving up the thing that keeps the privacy story short.
+
+The argument against is not effort, it is need. **iOS has unpacked ZIP files by
+itself since iOS 13** — tap one in Files and it opens. The problem this app
+exists to solve is already solved there for most people, and what remains is RAR
+and 7z. That is a real gap but a much narrower one, and it would want different
+words on the store page: not "opens archives" but "opens the archives your phone
+will not". Same code, different product.
