@@ -30,10 +30,29 @@ bundled or shipped.
   "$ANDROID_HOME"/ndk/*/toolchains/llvm/prebuilt/*/bin/llvm-readelf -l libarchive_native.so
   ```
 
-- **The release path builds and packages.** `./gradlew -p android :app:assembleRelease`
-  succeeds. The JS bundle is embedded as `assets/index.android.bundle` rather
-  than served by Metro, and all four architectures are present. This is the
-  category of failure a debug build cannot show you.
+- **The release bundle builds, and was taken apart.**
+  `./gradlew -p android :app:bundleRelease` succeeds. Inside the `.aab`: the JS
+  bundle is embedded as `base/assets/index.android.bundle` rather than served by
+  Metro, all four architectures carry `libarchive_native.so`, and the manifest
+  names `ro.sacomplex.ezunpack` with no trace of the old package. Native debug
+  symbols ride along under `BUNDLE-METADATA`, so Play will symbolicate native
+  crashes rather than showing raw addresses.
+
+  **That bundle cannot be uploaded.** Expo's generated `release` build type is
+  signed with the debug key, which Play refuses. The uploadable artifact comes
+  from EAS, which holds the upload key:
+
+  ```bash
+  npx eas-cli build --profile production --platform android
+  ```
+
+  The local build's job is a different one: proving the release path compiles
+  and packages before you spend time in a queue.
+
+  If it fails on a locked file under `node_modules/*/android/build`, the Gradle
+  daemon from a previous build is still holding it — Windows will not delete an
+  open file. `./gradlew -p android --stop`, remove that module's `build`
+  directory, and run again.
 - **Target API 36.** Expo SDK 57's default, which satisfies the current
   requirement. Worth confirming against the console at upload; it is a one-line
   check, not a task.
