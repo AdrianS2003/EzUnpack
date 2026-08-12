@@ -7,6 +7,11 @@
 > **Read this before publishing it.** Every factual claim below was checked
 > against the source code, but this is not legal advice. Satisfy yourself that it
 > describes the app you are actually shipping.
+>
+> **`privacy-policy.html` is the copy that gets hosted.** This file is the
+> readable one; that one is the published one, and they say the same thing today.
+> Change one and change the other — a policy that contradicts itself at two
+> addresses is worse than either version alone.
 
 ## The short version
 

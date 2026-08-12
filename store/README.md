@@ -7,7 +7,8 @@ bundled or shipped.
 
 | File | What it is for |
 | --- | --- |
-| `privacy-policy.md` | Host it somewhere public, then paste the URL into the console. Complete — contact address filled in. |
+| `privacy-policy.html` | The copy that gets hosted. Self-contained, both languages, one URL. |
+| `privacy-policy.md` | The same text, readable in the repo. If you change one, change the other. |
 | `listing.md` | Title, short and full descriptions in English and Romanian, plus what to photograph for the screenshots. |
 | `data-safety.md` | Every answer for the Data Safety form and the content rating questionnaire, with the reasoning. |
 | `play-icon-512.png` | The 512 × 512 store icon, flattened onto white. Play rejects an alpha channel, so this one has none — verified, not assumed. |
@@ -46,12 +47,31 @@ bundled or shipped.
 
 ## Left to do, in this order
 
-**1. Host `privacy-policy.md`.**
-A GitHub Pages site on this repo is enough — the file is already Markdown and
-needs no edits. The URL is a required field in the console, so nothing else can
-proceed without it.
+**1. Host `privacy-policy.html` and paste its URL into the console.**
+It is a single self-contained file — no stylesheet, no fonts, no scripts to
+fetch — so it works on any host that can serve a file. Both languages are on the
+one page, which is what you want: Play takes a single URL.
 
-The same address, `sacomplex.media@gmail.com`, is the contact in the policy, the
+The URL is a required field, so nothing else proceeds without it. Three ways,
+cheapest first:
+
+- **GitHub Pages.** This repo has no remote yet. Create one, push, and switch
+  Pages on for the `master` branch; the policy lands at
+  `https://<user>.github.io/<repo>/store/privacy-policy.html`. Free and stable,
+  but Pages on a *private* repo needs a paid plan, so on the free tier this
+  publishes the source as well. That may be fine — it is your app — but it is a
+  decision, not a detail.
+- **A separate public repo holding only this file.** Same as above without
+  exposing the source. Two minutes of work and the tidiest answer if the code
+  stays private.
+- **Your own domain**, if `sacomplex` has one. This is the best long-term home:
+  the address survives moving hosts, and a store listing that points at a domain
+  you own reads better than one pointing at `github.io`.
+
+Whatever you pick, the address has to keep working for as long as the app is
+listed. Google re-checks it.
+
+The same email, `sacomplex.media@gmail.com`, is the contact in the policy, the
 `To:` line on the app's crash screen (`src/support.ts`), and the developer
 contact in the listing. Change one and change all three.
 
