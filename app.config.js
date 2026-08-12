@@ -66,7 +66,7 @@ module.exports = {
       'expo-sharing',
     ],
     android: {
-      package: 'com.ezunpack.app',
+      package: 'ro.sacomplex.ezunpack',
       adaptiveIcon: {
         foregroundImage: './assets/images/android-icon-foreground.png',
         monochromeImage: './assets/images/android-icon-monochrome.png',

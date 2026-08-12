@@ -1,12 +1,12 @@
 # Privacy Policy — EzUnpack
 
-**Last updated:** 30 July 2026
-**App:** EzUnpack (`com.ezunpack.app`)
+**Last updated:** 12 August 2026
+**App:** EzUnpack (`ro.sacomplex.ezunpack`)
 **Contact:** sacomplex.media@gmail.com
 
-> **Draft.** Every factual claim below was checked against the source code, but
-> this is not legal advice. Read it, put your own name and email in, and satisfy
-> yourself that it describes the app you are shipping before you publish it.
+> **Read this before publishing it.** Every factual claim below was checked
+> against the source code, but this is not legal advice. Satisfy yourself that it
+> describes the app you are actually shipping.
 
 ## The short version
 
@@ -84,8 +84,8 @@ Questions about this policy: sacomplex.media@gmail.com
 
 # Politica de confidențialitate — EzUnpack
 
-**Ultima actualizare:** 30 iulie 2026
-**Aplicația:** EzUnpack (`com.ezunpack.app`)
+**Ultima actualizare:** 12 august 2026
+**Aplicația:** EzUnpack (`ro.sacomplex.ezunpack`)
 **Contact:** sacomplex.media@gmail.com
 
 ## Pe scurt
