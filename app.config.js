@@ -22,7 +22,7 @@ module.exports = {
   expo: {
     name: 'EzUnpack',
     slug: 'ez-unpack',
-    version: '1.0.0',
+    version: '1.0.1',
     scheme: 'ezunpack',
     orientation: 'portrait',
     // The app follows the phone's light/dark setting unless the user overrides
