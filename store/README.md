@@ -61,6 +61,15 @@ bundled or shipped.
   borrows the phone's own speech dialog, and files arrive and leave through
   system pickers.
 - **No `READ_MEDIA_AUDIO`.** Removed; the app never touches an audio file.
+- **R8 code shrinking — enabled, not yet verified.** Play Console flagged low
+  DEX optimisation and 1% obfuscation; both came from R8 being off.
+  `expo-build-properties` in `app.config.js` now turns on minification and
+  resource shrinking for release builds. R8 can break code that is found by
+  name at runtime, so the internal-testing pass in step 4 is what proves it.
+  The one such spot of ours, the JNI bridge, has its keep rule in
+  `modules/archive-native/android/consumer-rules.pro`. The obfuscation figure
+  will rise but stay well below 100%: the app's own logic is JavaScript, which
+  R8 never sees, and React Native keeps many class names on purpose.
 - **The share sheet is honest.** EzUnpack now offers itself only for archives and
   for unidentified files, not for every photo and link on the phone.
 

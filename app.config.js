@@ -64,6 +64,21 @@ module.exports = {
       ],
       './plugins/with-archive-open-with',
       'expo-sharing',
+      [
+        'expo-build-properties',
+        {
+          android: {
+            // R8 in release builds. Without it Play Console reports low DEX
+            // optimisation and ~1% obfuscation: the Java/Kotlin side ships
+            // unshrunk, with every original class name. The mapping file goes
+            // into the .aab by itself, so Play still shows readable crash stacks.
+            // Libraries that rely on reflection bring their own keep rules; ours
+            // is in modules/archive-native/android/consumer-rules.pro.
+            enableMinifyInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
+          },
+        },
+      ],
     ],
     android: {
       package: 'ro.sacomplex.ezunpack',

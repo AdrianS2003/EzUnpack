@@ -17,6 +17,8 @@ android {
   defaultConfig {
     versionCode 1
     versionName '0.1.0'
+    // Applied to the app's R8 pass, so the JNI names survive minification.
+    consumerProguardFiles 'consumer-rules.pro'
     externalNativeBuild {
       cmake {
         cppFlags "-std=c++17", "-fexceptions"
